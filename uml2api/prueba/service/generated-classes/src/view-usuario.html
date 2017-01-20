@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<link href='../bower_components/polymer/polymer.html' rel='import'>
+  <link href='shared-styles.html' rel='import'>
+  <dom-module id='view-usuario'>
+    <template>
+      <style include='shared-styles'>
+        /* Reglas CSS para tu elemento */
+        	 paper-button.custom:hover {
+                background-color: var(--paper-indigo-100);
+            }
+        	  paper-tab[link] a {
+        	    @apply(--layout-horizontal);
+        	    @apply(--layout-center-center);
+        	    color: #fff;
+        	    background: #5BCCAA;
+        	    text-decoration: none;
+        	  } 	
+        
+            paper-button.indigo {
+                background-color: var(--paper-indigo-500);
+                color: white;
+                --paper-button-raised-keyboard-focus: {
+                    background-color: var(--paper-pink-a200) !important;
+                    color: white !important;
+                };
+            }
+      </style>
+      <iron-ajax auto headers='{"Content-Type": "application/json;charset=utf-8"}' url='/service/script.php' params='{{ajaxParams}}' handle-as='json' debounce-duration='300' method='POST' last-response='{{response}}'>
+        </iron-ajax>
+      <div class='card'>
+        <form is='iron-form' method='post' action='/service/script.php' id='usuario'>
+          
+          <paper-input name='avatar' label='Avatar' required type='text'  maxlength='255'  disabled='true' value='{{response.Avatar}}'>
+          </paper-input>
+          <paper-input name='nombre' label='Nombre' required type='text'  maxlength='50'  disabled='true' value='{{response.Nombre}}'>
+          </paper-input>
+          
+          
+          <paper-input name='password' label='Password' required type='text'  maxlength='50'  disabled='true' value='{{response.Password}}'>
+          </paper-input>
+          <paper-input name='apellidos' label='Apellidos' required type='text'  maxlength='100'  disabled='true' value='{{response.Apellidos}}'>
+          </paper-input>
+          <paper-input name='email' label='Email' required type='text'  maxlength='1'  disabled='true' value='{{response.Email}}'>
+          </paper-input>
+          
+          <div style='text-align: center;'>
+            <a href='/viewperfil/{{response.Fkperfil}}'>
+              <paper-button raised class='button-send'>
+                View Perfil
+              </paper-button>
+            </a>
+          </div>
+          <paper-input name='idusuario' label='Idusuario' required type='text'  maxlength='50'  disabled='true' value='{{response.Idusuario}}'>
+          </paper-input>
+          <paper-input name='type' type='hidden' style='display: none;' value='{{type}}'>
+          </paper-input>
+        </form>
+        <div class='out'>
+        </div>
+      </div>
+      <br>
+      <br>
+      <div class='card'>
+        <iron-ajax auto headers='{"Content-Type": "application/json;charset=utf-8"}' url='/service/script.php' params='{"type":"getAllUsuario"}' handle-as='json' debounce-duration='300' method='POST' last-response='{{usuario2}}'>
+        </iron-ajax>
+        <h1>
+          Usuario
+        </h1>
+        <form is='iron-form' method='post' action='/service/script.php' id='usuariousuario2'>
+          <paper-dropdown-menu label='Add Usuario'>
+            <paper-listbox class='dropdown-content' attr-for-selected='value' selected='{{usuariodate}}'>
+              <template is='dom-repeat' items='{{usuario2}}'>
+                <paper-item value='{{item.Idusuario}}'>
+                  {{item.Idusuario}}
+                </paper-item>
+              </template>
+            </paper-listbox>
+          </paper-dropdown-menu>
+          <paper-input name='type' type='hidden' style='display: none;' value='addUsuarioListUsuarios'>
+          </paper-input>
+          <paper-input name='idusuario' type='hidden' style='display: none;' value='{{usuariodate}}'>
+          </paper-input>
+          <paper-input name='idelement' type='hidden' style='display: none;' value='{{idelement}}'>
+          </paper-input>
+          <paper-button raised class='custom indigo' onclick='document.getElementById("usuariousuario2").submit()'>
+            <iron-icon icon='icon:send'>
+            </iron-icon>
+            Send
+          </paper-button>
+          <br>
+        </form>
+      </div>
+      <div class='card'>
+        <iron-ajax auto headers='{"Content-Type": "application/json;charset=utf-8"}' url='/service/script.php' params='{"type":"getAllInvitacion"}' handle-as='json' debounce-duration='300' method='POST' last-response='{{invitacion2}}'>
+        </iron-ajax>
+        <h1>
+          Invitacion
+        </h1>
+        <form is='iron-form' method='post' action='/service/script.php' id='usuarioinvitacion2'>
+          <paper-dropdown-menu label='Add Invitacion'>
+            <paper-listbox class='dropdown-content' attr-for-selected='value' selected='{{invitaciondate}}'>
+              <template is='dom-repeat' items='{{invitacion2}}'>
+                <paper-item value='{{item.Idinvitacion}}'>
+                  {{item.Idinvitacion}}
+                </paper-item>
+              </template>
+            </paper-listbox>
+          </paper-dropdown-menu>
+          <paper-input name='type' type='hidden' style='display: none;' value='addUsuarioUsuarios'>
+          </paper-input>
+          <paper-input name='idInvitacion' type='hidden' style='display: none;' value='{{invitaciondate}}'>
+          </paper-input>
+          <paper-input name='idelement' type='hidden' style='display: none;' value='{{idelement}}'>
+          </paper-input>
+          <paper-button raised class='custom indigo' onclick='document.getElementById("usuarioinvitacion2").submit()'>
+            <iron-icon icon='icon:send'>
+            </iron-icon>
+            Send
+          </paper-button>
+          <br>
+        </form>
+      </div>
+    </template>
+    <script>
+      Polymer({
+          is: "view-usuario",
+               properties: {
+      		    type:{
+                     type: String,
+                     value: "getUsuario"
+                  },
+      			idelement:{
+                     type: String,
+                     value: "0"
+                  },
+                  ajaxParams: {
+                      type: String,
+                      computed: "processParams(type,idelement)"
+                  }
+              },
+              listeners: {
+                  "iron-form-response": "formResponse",
+                  "iron-form-submit": "formSubmit",
+                  "iron-form-error": "formError"
+              },
+              formSubmit: function (event) {
+                  this.querySelector(".out").innerHTML = JSON.stringify(event.detail);
+              },
+              formResponse: function (event, response) {
+                  console.log(event.detail);
+                  if (200 === response.xhr.status) {
+                      var data = response.xhr;
+                      console.log(response);
+                      if(!data.response.success){
+                          this.querySelector(".outputServer").innerHTML = "Error al crear usuario, por favor intentelo mas tarde";
+                      }
+                  }
+              },
+              formError: function (event) {
+                  this.querySelector(".outputServer").innerHTML = event.detail.error;
+              },
+      		processParams: function(type1,idelement1) {
+      			return {
+      				alt: "json",
+      				q: "chrome",
+      				type: type1,
+      				idusuario: idelement1
+      			};
+      		}
+        });
+    </script>
+  </dom-module>

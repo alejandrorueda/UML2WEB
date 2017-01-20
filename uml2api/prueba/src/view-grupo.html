@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+<link href='../bower_components/polymer/polymer.html' rel='import'>
+  <link href='shared-styles.html' rel='import'>
+  <dom-module id='view-grupo'>
+    <template>
+      <style include='shared-styles'>
+        /* Reglas CSS para tu elemento */
+        	 paper-button.custom:hover {
+                background-color: var(--paper-indigo-100);
+            }
+        	  paper-tab[link] a {
+        	    @apply(--layout-horizontal);
+        	    @apply(--layout-center-center);
+        	    color: #fff;
+        	    background: #5BCCAA;
+        	    text-decoration: none;
+        	  } 	
+        
+            paper-button.indigo {
+                background-color: var(--paper-indigo-500);
+                color: white;
+                --paper-button-raised-keyboard-focus: {
+                    background-color: var(--paper-pink-a200) !important;
+                    color: white !important;
+                };
+            }
+      </style>
+      <iron-ajax auto headers='{"Content-Type": "application/json;charset=utf-8"}' url='[[urlApi]]' params='{{ajaxParams}}' handle-as='json' debounce-duration='300' method='POST' last-response='{{response}}'>
+        </iron-ajax>
+      <div class='card'>
+        <form is='iron-form' method='post' action='[[urlApi]]' id='grupoaction'>
+          <iron-autogrow-textarea name='informacion' label='Informacion' required  style='height: 171px; width: 899px;'  placeholder='Informacion'  value='{{response.Informacion}}'>
+          </iron-autogrow-textarea>
+          <paper-input name='nombre' label='Nombre' required type='text'  maxlength='255'   value='{{response.Nombre}}'>
+          </paper-input>
+          
+          <paper-dropdown-menu label='Choose an action'>
+            <paper-listbox class='dropdown-content' attr-for-selected='value' selected='{{grupoaction}}'>
+              <paper-item value='deleteGrupo'>
+                Delete
+              </paper-item>
+              <paper-item value='updateGrupo'>
+                Update
+              </paper-item>
+            </paper-listbox>
+          </paper-dropdown-menu>
+          <paper-input name='type' type='hidden' style='display: none;' value='{{grupoaction}}'>
+          </paper-input>
+          <paper-input name='idGrupo' type='hidden' value='{{idelement}}' style='display: none;'>
+          </paper-input>
+          <paper-button raised class='custom indigo' onclick='document.getElementById("grupoaction").submit()'>
+              <iron-icon icon='icon:send'>
+              </iron-icon>
+              Submit
+            </paper-button>
+        </form>
+        <div class='out'>
+        </div>
+      </div>
+      <br>
+      <br>
+      <div class='card'>
+        <iron-ajax auto headers='{"Content-Type": "application/json;charset=utf-8"}' url='[[urlApi]]' params='{"type":"getAllUsuario"}' handle-as='json' debounce-duration='300' method='POST' last-response='{{usuario2}}'>
+        </iron-ajax>
+        <h1>
+          Usuario
+        </h1>
+        <form is='iron-form' method='post' action='[[urlApi]]' id='grupousuario2'>
+          <paper-dropdown-menu label='Add Usuario'>
+            <paper-listbox class='dropdown-content' attr-for-selected='value' selected='{{usuariodate}}'>
+              <template is='dom-repeat' items='{{usuario2}}'>
+                <paper-item value='{{item.Idusuario}}'>
+                  {{item.Idusuario}}
+                </paper-item>
+              </template>
+            </paper-listbox>
+          </paper-dropdown-menu>
+          <paper-input name='type' type='hidden' style='display: none;' value='addGrupoUsuarios'>
+          </paper-input>
+          <paper-input name='idusuario' type='hidden' style='display: none;' value='{{usuariodate}}'>
+          </paper-input>
+          <paper-input name='idelement' type='hidden' style='display: none;' value='{{idelement}}'>
+          </paper-input>
+          <paper-button raised class='custom indigo' onclick='document.getElementById("grupousuario2").submit()'>
+              <iron-icon icon='icon:send'>
+              </iron-icon>
+              Add
+            </paper-button>
+          <br>
+        </form>
+        <div>
+          <iron-ajax auto headers='{"Content-Type": "application/json;charset=utf-8"}' url='[[urlApi]]' params='{{_getParams("getGrupoUsuarios",idelement)}}' handle-as='json' debounce-duration='300' method='POST' last-response='{{ownusuario2}}'>
+          </iron-ajax>
+          <form is='iron-form' method='post' action='[[urlApi]]' id='owngrupousuario2'>
+            <paper-dropdown-menu label='Delete Usuario'>
+              <paper-listbox class='dropdown-content' attr-for-selected='value' selected='{{ownusuariodate}}'>
+                <template is='dom-repeat' items='{{ownusuario2}}'>
+                  <paper-item value='{{item.Idusuario}}'>
+                    {{item.Idusuario}}
+                  </paper-item>
+                </template>
+              </paper-listbox>
+            </paper-dropdown-menu>
+            <paper-input name='type' type='hidden' style='display: none;' value='deleteGrupoUsuarios'>
+            </paper-input>
+            <paper-input name='idusuario' type='hidden' style='display: none;' value='{{ownusuariodate}}'>
+            </paper-input>
+            <paper-input name='idelement' type='hidden' style='display: none;' value='{{idelement}}'>
+            </paper-input>
+            <paper-button raised class='custom indigo' onclick='document.getElementById("owngrupousuario2").submit()'>
+                <iron-icon icon='icon:send'>
+                </iron-icon>
+                Delete
+              </paper-button>
+            <br>
+          </form>
+        </div>
+      </div>
+      <div class='card'>
+        <iron-ajax auto headers='{"Content-Type": "application/json;charset=utf-8"}' url='[[urlApi]]' params='{"type":"getAllViaje"}' handle-as='json' debounce-duration='300' method='POST' last-response='{{viaje2}}'>
+        </iron-ajax>
+        <h1>
+          Viaje
+        </h1>
+        <form is='iron-form' method='post' action='[[urlApi]]' id='grupoviaje2'>
+          <paper-dropdown-menu label='Add Viaje'>
+            <paper-listbox class='dropdown-content' attr-for-selected='value' selected='{{viajedate}}'>
+              <template is='dom-repeat' items='{{viaje2}}'>
+                <paper-item value='{{item.Idviaje}}'>
+                  {{item.Idviaje}}
+                </paper-item>
+              </template>
+            </paper-listbox>
+          </paper-dropdown-menu>
+          <paper-input name='type' type='hidden' style='display: none;' value='addGrupoViajes'>
+          </paper-input>
+          <paper-input name='idViaje' type='hidden' style='display: none;' value='{{viajedate}}'>
+          </paper-input>
+          <paper-input name='idelement' type='hidden' style='display: none;' value='{{idelement}}'>
+          </paper-input>
+          <paper-button raised class='custom indigo' onclick='document.getElementById("grupoviaje2").submit()'>
+              <iron-icon icon='icon:send'>
+              </iron-icon>
+              Add
+            </paper-button>
+          <br>
+        </form>
+        <div>
+          <iron-ajax auto headers='{"Content-Type": "application/json;charset=utf-8"}' url='[[urlApi]]' params='{{_getParams("getGrupoViajes",idelement)}}' handle-as='json' debounce-duration='300' method='POST' last-response='{{ownviaje2}}'>
+          </iron-ajax>
+          <form is='iron-form' method='post' action='[[urlApi]]' id='owngrupoviaje2'>
+            <paper-dropdown-menu label='Delete Viaje'>
+              <paper-listbox class='dropdown-content' attr-for-selected='value' selected='{{ownviajedate}}'>
+                <template is='dom-repeat' items='{{ownviaje2}}'>
+                  <paper-item value='{{item.Idviaje}}'>
+                    {{item.Idviaje}}
+                  </paper-item>
+                </template>
+              </paper-listbox>
+            </paper-dropdown-menu>
+            <paper-input name='type' type='hidden' style='display: none;' value='deleteGrupoViajes'>
+            </paper-input>
+            <paper-input name='idViaje' type='hidden' style='display: none;' value='{{ownviajedate}}'>
+            </paper-input>
+            <paper-input name='idelement' type='hidden' style='display: none;' value='{{idelement}}'>
+            </paper-input>
+            <paper-button raised class='custom indigo' onclick='document.getElementById("owngrupoviaje2").submit()'>
+                <iron-icon icon='icon:send'>
+                </iron-icon>
+                Delete
+              </paper-button>
+            <br>
+          </form>
+        </div>
+      </div>
+    </template>
+    <script>
+      Polymer({
+          is: "view-grupo",
+               properties: {
+      		    type:{
+                     type: String,
+                     value: "getGrupo"
+                  },
+      			idelement:{
+                     type: String,
+                     value: "0"
+                  },
+                  ajaxParams: {
+                      type: String,
+                      computed: "processParams(type,idelement)"
+                  }
+              },
+              listeners: {
+                  "iron-form-response": "formResponse",
+                  "iron-form-submit": "formSubmit",
+                  "iron-form-error": "formError"
+              },
+              formSubmit: function (event) {
+                 // this.querySelector(".out").innerHTML = JSON.stringify(event.detail);
+              },
+              formResponse: function (event, response) {
+                  console.log(event.detail);
+                  if (200 === response.xhr.status) {
+                      var data = response.xhr;
+                      console.log(response);
+                      if(!data.response.success){
+                          this.querySelector(".out").innerHTML = "Error with the send";
+                      }
+                      else{
+                        this.querySelector(".out").innerHTML = "Successful!!";
+                        if(!this.grupoaction.includes("delete")){
+                      	document.location.reload();
+                        }
+                        else{
+                        	document.location.href = "#/grupo";
+                        	document.location.reload();
+                        }
+                      	
+                      }
+                  }
+              },
+              formError: function (event) {
+                  this.querySelector(".out").innerHTML = event.detail.error;
+              },
+      		processParams: function(type1,idelement1) {
+      			return {
+      				alt: "json",
+      				q: "chrome",
+      				type: type1,
+      				idGrupo: idelement1
+      			};
+      		},
+      		_getParams: function(type1,idelement1) {
+      			return {
+      				alt: "json",
+      				q: "chrome",
+      				type: type1,
+      				idelement: idelement1
+      			};
+      		}
+        });
+    </script>
+  </dom-module>

@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<link href='../bower_components/polymer/polymer.html' rel='import'>
+  <link href='shared-styles.html' rel='import'>
+  <dom-module id='element-mensajes'>
+    <template>
+      <style include='shared-styles'>
+        paper-button.custom:hover {
+                background-color: var(--paper-indigo-100);
+            }
+        
+            paper-button.indigo {
+                background-color: var(--paper-indigo-500);
+                color: white;
+                --paper-button-raised-keyboard-focus: {
+                    background-color: var(--paper-pink-a200) !important;
+                    color: white !important;
+                };
+            }
+      </style>
+      <iron-ajax auto headers='{"Content-Type": "application/json;charset=utf-8"}' url='/service/script.php' params='{"type":"getAllMensajes"}' handle-as='json' debounce-duration='300' method='POST' last-response='{{response}}'>
+      </iron-ajax>
+      <div style='text-align: center;'>
+        <a href='{{baseUrl}}newmensajes'>
+          <paper-button raised class='button-send'>
+            New Mensajes
+          </paper-button>
+        </a>
+      </div>
+      <iron-list items='[[response]]' as='item'>
+        <template>
+          <div class='card'>
+            <paper-material elevation='3'>
+              <div class='box-element'>
+                <h1 class='title' tabindex='-1'>
+                  <a href='/viewmensajes/{{item.IdMensajes}}'>
+                    {{item.IdMensajes}}
+                  </a>
+                </h1>
+                <p>
+                  <label>
+                    <strong>
+                      Descripcion:
+                    </strong>
+                    {{item.Descripcion}}
+                  </label>
+                </p>
+                <p>
+                  <label>
+                    <strong>
+                      Asunto:
+                    </strong>
+                    {{item.Asunto}}
+                  </label>
+                </p>
+              </div>
+            </paper-material>
+          </div>
+        </template>
+      </iron-list>
+    </template>
+    <script>
+      Polymer({
+          is: "element-mensajes",
+               properties: {
+      		    type:{
+                     type: String,
+                     value: "getAllMensajes"
+                  },
+                  ajaxParams: {
+                      type: String,
+                      computed: "processParams(type)"
+                  }
+              },
+      		processParams: function(type1) {
+      			return {
+      				alt: "json",
+      				q: "chrome",
+      				type: type1
+      			};
+      		}
+        });
+    </script>
+  </dom-module>

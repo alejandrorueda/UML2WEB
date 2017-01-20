@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<tags:Archive xmi:version="2.0" xmlns:xmi="http://www.omg.org/XMI" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:tags="http://tags/1.0" name="Method Junior 1">
+  <contents xsi:type="tags:Document" name="portada-leccion-01">
+    <root name="html">
+      <attribute name="lang" value="en"/>
+      <content xsi:type="tags:Tag" name="head">
+        <content xsi:type="tags:Tag" name="meta">
+          <attribute name="charset" value="utf-8"/>
+        </content>
+        <content xsi:type="tags:Tag" name="meta">
+          <attribute name="http-equiv" value="X-UA-Compatible"/>
+        </content>
+        <content xsi:type="tags:Tag" name="link">
+          <attribute name="href" value="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css"/>
+          <attribute name="rel" value="stylesheet"/>
+        </content>
+      </content>
+      <content xsi:type="tags:Tag" name="body">
+        <content xsi:type="tags:Tag" name="h1">
+          <content xsi:type="tags:Text" content="FrontPage"/>
+        </content>
+        <content xsi:type="tags:Tag" name="script">
+          <attribute name="src" value="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"/>
+        </content>
+        <content xsi:type="tags:Tag" name="script">
+          <attribute name="src" value="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"/>
+        </content>
+      </content>
+    </root>
+  </contents>
+  <contents xsi:type="tags:Document" name="QueHasEscuchadoText">
+    <root name="html">
+      <content xsi:type="tags:Tag" name="body">
+        <content xsi:type="tags:Tag" name="h1">
+          <content xsi:type="tags:Text" content="Multiple Choice Photo Text"/>
+        </content>
+      </content>
+    </root>
+  </contents>
+</tags:Archive>

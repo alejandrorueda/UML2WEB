@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<link href='../bower_components/polymer/polymer.html' rel='import'>
+  <link href='shared-styles.html' rel='import'>
+  <dom-module id='view-colaborador'>
+    <template>
+      <style include='shared-styles'>
+        /* Reglas CSS para tu elemento */
+        	 paper-button.custom:hover {
+                background-color: var(--paper-indigo-100);
+            }
+        	  paper-tab[link] a {
+        	    @apply(--layout-horizontal);
+        	    @apply(--layout-center-center);
+        	    color: #fff;
+        	    background: #5BCCAA;
+        	    text-decoration: none;
+        	  } 	
+        
+            paper-button.indigo {
+                background-color: var(--paper-indigo-500);
+                color: white;
+                --paper-button-raised-keyboard-focus: {
+                    background-color: var(--paper-pink-a200) !important;
+                    color: white !important;
+                };
+            }
+      </style>
+      <iron-ajax auto headers='{"Content-Type": "application/json;charset=utf-8"}' url='/service/script.php' params='{{ajaxParams}}' handle-as='json' debounce-duration='300' method='POST' last-response='{{response}}'>
+        </iron-ajax>
+      <div class='card'>
+        <form is='iron-form' method='post' action='/service/script.php' id='colaborador'>
+          
+          <paper-input name='mensaje' label='Mensaje'  type    disabled='true' value='{{response.Mensaje}}'>
+          </paper-input>
+          
+          <paper-input name='prueba' label='Prueba' required type='number'    disabled='true' value='{{response.Prueba}}'>
+          </paper-input>
+          <paper-input name='email' label='Email' required type='text'  maxlength='1'  disabled='true' value='{{response.Email}}'>
+          </paper-input>
+          
+          <div style='text-align: center;'>
+            <a href='/viewperfil/{{response.Fkperfil}}'>
+              <paper-button raised class='button-send'>
+                View Perfil
+              </paper-button>
+            </a>
+          </div>
+          <paper-input name='idusuario' label='Idusuario' required type='text'  maxlength='50'  disabled='true' value='{{response.Idusuario}}'>
+          </paper-input>
+          <paper-input name='avatar' label='Avatar' required type='text'  maxlength='255'  disabled='true' value='{{response.Avatar}}'>
+          </paper-input>
+          <paper-input name='idcolaborador2' label='IdColaborador2' required type='text'  maxlength='200'  disabled='true' value='{{response.IdColaborador2}}'>
+          </paper-input>
+          <paper-input name='nombre' label='Nombre' required type='text'  maxlength='50'  disabled='true' value='{{response.Nombre}}'>
+          </paper-input>
+          
+          <paper-input name='password' label='Password' required type='text'  maxlength='50'  disabled='true' value='{{response.Password}}'>
+          </paper-input>
+          <paper-input name='apellidos' label='Apellidos' required type='text'  maxlength='100'  disabled='true' value='{{response.Apellidos}}'>
+          </paper-input>
+          <paper-input name='type' type='hidden' style='display: none;' value='{{type}}'>
+          </paper-input>
+        </form>
+        <div class='out'>
+        </div>
+      </div>
+      <br>
+      <br>
+    </template>
+    <script>
+      Polymer({
+          is: "view-colaborador",
+               properties: {
+      		    type:{
+                     type: String,
+                     value: "getColaborador"
+                  },
+      			idelement:{
+                     type: String,
+                     value: "0"
+                  },
+                  ajaxParams: {
+                      type: String,
+                      computed: "processParams(type,idelement)"
+                  }
+              },
+              listeners: {
+                  "iron-form-response": "formResponse",
+                  "iron-form-submit": "formSubmit",
+                  "iron-form-error": "formError"
+              },
+              formSubmit: function (event) {
+                  this.querySelector(".out").innerHTML = JSON.stringify(event.detail);
+              },
+              formResponse: function (event, response) {
+                  console.log(event.detail);
+                  if (200 === response.xhr.status) {
+                      var data = response.xhr;
+                      console.log(response);
+                      if(!data.response.success){
+                          this.querySelector(".outputServer").innerHTML = "Error al crear colaborador, por favor intentelo mas tarde";
+                      }
+                  }
+              },
+              formError: function (event) {
+                  this.querySelector(".outputServer").innerHTML = event.detail.error;
+              },
+      		processParams: function(type1,idelement1) {
+      			return {
+      				alt: "json",
+      				q: "chrome",
+      				type: type1,
+      				idColaborador2: idelement1
+      			};
+      		}
+        });
+    </script>
+  </dom-module>

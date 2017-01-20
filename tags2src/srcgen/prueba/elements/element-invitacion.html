@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <link href="../bower_components/polymer/polymer.html" rel="import">
+  </head>
+  <dom-module id="element-invitacion">
+    <style is="custom-style">
+      paper-button.custom:hover {
+              background-color: var(--paper-indigo-100);
+          }
+      
+          paper-button.indigo {
+              background-color: var(--paper-indigo-500);
+              color: white;
+              --paper-button-raised-keyboard-focus: {
+                  background-color: var(--paper-pink-a200) !important;
+                  color: white !important;
+              };
+          }
+    </style>
+    <iron-ajax auto url="/service/sript.php" params="{{ajaxParams}}" handle-as="json" debounce-duration="300" method="POST" last-response="{{response}}">
+    </iron-ajax>
+    <div style="text-align: center;">
+      <a href="{{baseUrl}}newinvitacion">
+        <paper-button raised class="button-send">
+          New Invitacion
+        </paper-button>
+      </a>
+    </div>
+    <iron-list items="[[response]]" as="item">
+      <template>
+        <div class="out">
+          <paper-material elevation="3">
+            <div class="box-element">
+              <h1 class="title" tabindex="-1">
+                <a href="{{baseUrl}}invitacion/{{item.idInvitacion}}">
+                  {{item.idInvitacion}}
+                </a>
+              </h1>
+              <label>
+                <strong>
+                  Codigo:
+                </strong>
+                {{item.codigo}}
+              </label>
+              <label>
+                <strong>
+                  Activo:
+                </strong>
+                {{item.activo}}
+              </label>
+            </div>
+          </paper-material>
+        </div>
+      </template>
+    </iron-list>
+  </dom-module>
+  <script>
+    Polymer({
+        is: "element-invitacion",
+             properties: {
+    		    type:{
+                   type: String,
+                   value: "getAllInvitacion"
+                },
+                ajaxParams: {
+                    type: String,
+                    computed: "processParams(type)"
+                }
+            },
+    		processParams: function(type1) {
+    			return {
+    				alt: "json",
+    				q: "chrome",
+    				type: type1
+    			};
+    		}
+      });
+  </script>
+</html>

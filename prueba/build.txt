@@ -1,0 +1,71 @@
+- crear el archivo php-srcgen/prueba/service/propel.yml y rellenar el contenido con
+
+propel:
+  database:
+      connections:
+          prueba:
+              adapter: mysql
+              classname: Propel\Runtime\Connection\DebugPDO
+              dsn: mysql:host=127.0.0.1;port=3306;dbname=viajes
+              user: root
+              password: 
+              attributes:
+  runtime:
+      log:
+          defaultLogger:
+              type: stream
+              path: ./propel_log.txt
+              level: 100
+      defaultConnection: prueba
+      connections:
+          - prueba
+  generator:
+      schema:
+          autoPackage: true
+      defaultConnection: prueba
+      connections:
+          - prueba     
+
+- Copiar el directorio propel/vendor a php-srcgen/prueba/service/
+- Copiar el directorio propel/runtime a php-srcgen/prueba/service/
+- Ir a la carpeta del php-srcgen/prueba/service (tiene que estar el schema.xml y el propel.yml)
+- Ejecutar
+    php ~/Workspaces/TFGA/propel/bin/propel.php config:convert
+    php ~/Workspaces/TFGA/propel/bin/propel.php sql:build --overwrite
+    php ~/Workspaces/TFGA/propel/bin/propel.php sql:insert
+    php ~/Workspaces/TFGA/propel/bin/propel.php model:build
+
+
+POLYMER
+Ir a polymer-srcgen/prueba
+polymer init
+
+Ejecutar transformación
+
+bower install
+polimer serve
+
+ 
+          
+
+httpd.config
+         
+<IfModule alias_module>
+
+Alias /prueba /Users/ricardo.tesoriero/Workspaces/TFGA/workspace-prod/prueba/php-srcgen/prueba
+
+</IfModule>
+
+<Directory "/Users/ricardo.tesoriero/Workspaces/TFGA/workspace-prod/prueba/php-srcgen/prueba">
+Options None
+AllowOverride All
+Require all granted
+</Directory>
+
+Copiar /prueba/service/vendor
+Copiar /prueba/service/propel_log.txt
+
+
+
+
+         

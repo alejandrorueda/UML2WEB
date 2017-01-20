@@ -1,0 +1,328 @@
+
+Fri Oct 14 12:54:36 CEST 2016
+================================================================================
+Start of user code Grupo function
+   	   // file contents 
+          $con = Propel::getWriteConnection(GrupoTableMap::DATABASE_NAME);
+   
+   	   $con->beginTransaction();
+   
+          try{
+          
+          if(!$this->exists($idUsuario) && !is_null ($idUsuario)){
+            $usuario = $this->get($idUsuario);
+   	   }
+          else{
+            $usuario = new Usuario(); 
+            $usuario= $usuario->add($idUsuario,$idPerfil , $informacionPerfil
+             , $gustosPerfil
+             , $nacimientoPerfil
+            
+             , $passwordUsuario
+             , $nombreUsuario
+             , $apellidosUsuario
+             , $avatarUsuario
+             , $emailUsuario
+            );
+           }
+   
+          $this->addUsuario($usuario);
+          $this->save($con);
+          $con->commit();
+          return $this;
+   	   }catch (Exception $e) {
+   	
+   		 $con->rollback(); //en caso de que se produzca alguna excepcion la transacci?n ser? cancelada
+   		 throw $e;
+   		}
+   	   // End of user code
+Start of user code Operation1 function
+   	   // file contents 
+   	   // End of user code
+
+Fri Oct 14 12:59:49 CEST 2016
+================================================================================
+Start of user code Grupo function
+   	   // file contents 
+          $con = Propel::getWriteConnection(GrupoTableMap::DATABASE_NAME);
+   
+   	   $con->beginTransaction();
+   
+          try{
+          
+          if(!$this->exists($idUsuario) && !is_null ($idUsuario)){
+            $usuario = $this->get($idUsuario);
+   	   }
+          else{
+            $usuario = new Usuario(); 
+            $usuario= $usuario->add($idUsuario,$idPerfil , $informacionPerfil
+             , $gustosPerfil
+             , $nacimientoPerfil
+            
+             , $passwordUsuario
+             , $nombreUsuario
+             , $apellidosUsuario
+             , $avatarUsuario
+             , $emailUsuario
+            );
+           }
+   
+          $this->addUsuario($usuario);
+          $this->save($con);
+          $con->commit();
+          return $this;
+   	   }catch (Exception $e) {
+   	
+   		 $con->rollback(); //en caso de que se produzca alguna excepcion la transacci?n ser? cancelada
+   		 throw $e;
+   		}
+   	   // End of user code
+Start of user code Operation1 function
+   	   // file contents 
+   	   // End of user code
+
+Fri Oct 14 13:00:15 CEST 2016
+================================================================================
+Start of user code Grupo function
+   	   // file contents 
+          $con = Propel::getWriteConnection(GrupoTableMap::DATABASE_NAME);
+   
+   	   $con->beginTransaction();
+   
+          try{
+          
+          if(!$this->exists($idUsuario) && !is_null ($idUsuario)){
+            $usuario = $this->get($idUsuario);
+   	   }
+          else{
+            $usuario = new Usuario(); 
+            $usuario= $usuario->add($idUsuario,$idPerfil , $informacionPerfil
+             , $gustosPerfil
+             , $nacimientoPerfil
+            
+             , $passwordUsuario
+             , $nombreUsuario
+             , $apellidosUsuario
+             , $avatarUsuario
+             , $emailUsuario
+            );
+           }
+   
+          $this->addUsuario($usuario);
+          $this->save($con);
+          $con->commit();
+          return $this;
+   	   }catch (Exception $e) {
+   	
+   		 $con->rollback(); //en caso de que se produzca alguna excepcion la transacci?n ser? cancelada
+   		 throw $e;
+   		}
+   	   // End of user code
+Start of user code Operation1 function
+   	   // file contents 
+   	   // End of user code
+
+Fri Oct 14 13:01:17 CEST 2016
+================================================================================
+Start of user code Grupo function
+   	   // file contents 
+          $con = Propel::getWriteConnection(GrupoTableMap::DATABASE_NAME);
+   
+   	   $con->beginTransaction();
+   
+          try{
+          
+          if(!$this->exists($idUsuario) && !is_null ($idUsuario)){
+            $usuario = $this->get($idUsuario);
+   	   }
+          else{
+            $usuario = new Usuario(); 
+            $usuario= $usuario->add($idUsuario,$idPerfil , $informacionPerfil
+             , $gustosPerfil
+             , $nacimientoPerfil
+            
+             , $passwordUsuario
+             , $nombreUsuario
+             , $apellidosUsuario
+             , $avatarUsuario
+             , $emailUsuario
+            );
+           }
+   
+          $this->addUsuario($usuario);
+          $this->save($con);
+          $con->commit();
+          return $this;
+   	   }catch (Exception $e) {
+   	
+   		 $con->rollback(); //en caso de que se produzca alguna excepcion la transacci?n ser? cancelada
+   		 throw $e;
+   		}
+   	   // End of user code
+Start of user code Operation1 function
+   	   // file contents 
+   	   // End of user code
+
+Fri Oct 14 13:02:07 CEST 2016
+================================================================================
+Start of user code Grupo function
+   	   // file contents 
+          $con = Propel::getWriteConnection(GrupoTableMap::DATABASE_NAME);
+   
+   	   $con->beginTransaction();
+   
+          try{
+          
+          if(!$this->exists($idUsuario) && !is_null ($idUsuario)){
+            $usuario = $this->get($idUsuario);
+   	   }
+          else{
+            $usuario = new Usuario(); 
+            $usuario= $usuario->add($idUsuario,$idPerfil , $informacionPerfil
+             , $gustosPerfil
+             , $nacimientoPerfil
+            
+             , $passwordUsuario
+             , $nombreUsuario
+             , $apellidosUsuario
+             , $avatarUsuario
+             , $emailUsuario
+            );
+           }
+   
+          $this->addUsuario($usuario);
+          $this->save($con);
+          $con->commit();
+          return $this;
+   	   }catch (Exception $e) {
+   	
+   		 $con->rollback(); //en caso de que se produzca alguna excepcion la transacci?n ser? cancelada
+   		 throw $e;
+   		}
+   	   // End of user code
+Start of user code Operation1 function
+   	   // file contents 
+   	   // End of user code
+
+Fri Oct 14 13:19:58 CEST 2016
+================================================================================
+Start of user code Grupo function
+   	   // file contents 
+          $con = Propel::getWriteConnection(GrupoTableMap::DATABASE_NAME);
+   
+   	   $con->beginTransaction();
+   
+          try{
+          
+          if(!$this->exists($idUsuario) && !is_null ($idUsuario)){
+            $usuario = $this->get($idUsuario);
+   	   }
+          else{
+            $usuario = new Usuario(); 
+            $usuario= $usuario->add($idUsuario,$idPerfil , $informacionPerfil
+             , $gustosPerfil
+             , $nacimientoPerfil
+            
+             , $passwordUsuario
+             , $nombreUsuario
+             , $apellidosUsuario
+             , $avatarUsuario
+             , $emailUsuario
+            );
+           }
+   
+          $this->addUsuario($usuario);
+          $this->save($con);
+          $con->commit();
+          return $this;
+   	   }catch (Exception $e) {
+   	
+   		 $con->rollback(); //en caso de que se produzca alguna excepcion la transacci?n ser? cancelada
+   		 throw $e;
+   		}
+   	   // End of user code
+Start of user code Operation1 function
+   	   // file contents 
+   	   // End of user code
+
+Fri Oct 14 13:23:54 CEST 2016
+================================================================================
+Start of user code Grupo function
+   	   // file contents 
+          $con = Propel::getWriteConnection(GrupoTableMap::DATABASE_NAME);
+   
+   	   $con->beginTransaction();
+   
+          try{
+          
+          if(!$this->exists($idUsuario) && !is_null ($idUsuario)){
+            $usuario = $this->get($idUsuario);
+   	   }
+          else{
+            $usuario = new Usuario(); 
+            $usuario= $usuario->add($idUsuario,$idPerfil , $informacionPerfil
+             , $gustosPerfil
+             , $nacimientoPerfil
+            
+             , $passwordUsuario
+             , $nombreUsuario
+             , $apellidosUsuario
+             , $avatarUsuario
+             , $emailUsuario
+            );
+           }
+   
+          $this->addUsuario($usuario);
+          $this->save($con);
+          $con->commit();
+          return $this;
+   	   }catch (Exception $e) {
+   	
+   		 $con->rollback(); //en caso de que se produzca alguna excepcion la transacci?n ser? cancelada
+   		 throw $e;
+   		}
+   	   // End of user code
+Start of user code Operation1 function
+   	   // file contents 
+   	   // End of user code
+
+Fri Oct 14 13:25:20 CEST 2016
+================================================================================
+Start of user code Grupo function
+   	   // file contents 
+          $con = Propel::getWriteConnection(GrupoTableMap::DATABASE_NAME);
+   
+   	   $con->beginTransaction();
+   
+          try{
+          
+          if(!$this->exists($idUsuario) && !is_null ($idUsuario)){
+            $usuario = $this->get($idUsuario);
+   	   }
+          else{
+            $usuario = new Usuario(); 
+            $usuario= $usuario->add($idUsuario,$idPerfil , $informacionPerfil
+             , $gustosPerfil
+             , $nacimientoPerfil
+            
+             , $passwordUsuario
+             , $nombreUsuario
+             , $apellidosUsuario
+             , $avatarUsuario
+             , $emailUsuario
+            );
+           }
+   
+          $this->addUsuario($usuario);
+          $this->save($con);
+          $con->commit();
+          return $this;
+   	   }catch (Exception $e) {
+   	
+   		 $con->rollback(); //en caso de que se produzca alguna excepcion la transacci?n ser? cancelada
+   		 throw $e;
+   		}
+   	   // End of user code
+Start of user code Operation1 function
+   	   // file contents 
+   	   // End of user code

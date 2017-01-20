@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<link href='../bower_components/polymer/polymer.html' rel='import'>
+  <link href='shared-styles.html' rel='import'>
+  <dom-module id='view-colaborador'>
+    <template>
+      <style include='shared-styles'>
+        /* Reglas CSS para tu elemento */
+        	 paper-button.custom:hover {
+                background-color: var(--paper-indigo-100);
+            }
+        	  paper-tab[link] a {
+        	    @apply(--layout-horizontal);
+        	    @apply(--layout-center-center);
+        	    color: #fff;
+        	    background: #5BCCAA;
+        	    text-decoration: none;
+        	  } 	
+        
+            paper-button.indigo {
+                background-color: var(--paper-indigo-500);
+                color: white;
+                --paper-button-raised-keyboard-focus: {
+                    background-color: var(--paper-pink-a200) !important;
+                    color: white !important;
+                };
+            }
+      </style>
+      <iron-ajax auto headers='{"Content-Type": "application/json;charset=utf-8"}' url='[[urlApi]]' params='{{ajaxParams}}' handle-as='json' debounce-duration='300' method='POST' last-response='{{response}}'>
+        </iron-ajax>
+      <div class='card'>
+        <form is='iron-form' method='post' action='[[urlApi]]' id='colaboradoraction'>
+          <paper-input name='mensaje' label='Mensaje'  type     value='{{response.Mensaje}}'>
+          </paper-input>
+          <paper-input name='idcolaborador2' label='IdColaborador2' required type='text'  maxlength='200'   value='{{response.IdColaborador2}}'>
+          </paper-input>
+          <paper-input name='apellidos' label='Apellidos' required type='text'  maxlength='100'   value='{{response.Apellidos}}'>
+          </paper-input>
+          <paper-input name='email' label='Email' required type='text'  maxlength='1'   value='{{response.Email}}'>
+          </paper-input>
+          
+          <paper-input name='prueba' label='Prueba' required type='number'     value='{{response.Prueba}}'>
+          </paper-input>
+          <paper-input name='password' label='Password' required type='text'  maxlength='50'   value='{{response.Password}}'>
+          </paper-input>
+          
+          <div style='text-align: center;'>
+            <a href='#/viewperfil/{{response.Fkperfil}}'>
+              <paper-button raised class='button-send'>
+                View Perfil
+              </paper-button>
+            </a>
+          </div>
+          <paper-input name='nombre' label='Nombre' required type='text'  maxlength='50'   value='{{response.Nombre}}'>
+          </paper-input>
+          
+          <paper-input name='avatar' label='Avatar' required type='text'  maxlength='255'   value='{{response.Avatar}}'>
+          </paper-input>
+          <paper-input name='idusuario' label='Idusuario' required type='text'  maxlength='50'   value='{{response.Idusuario}}'>
+          </paper-input>
+          
+          <paper-dropdown-menu label='Choose an action'>
+            <paper-listbox class='dropdown-content' attr-for-selected='value' selected='{{colaboradoraction}}'>
+              <paper-item value='deleteColaborador'>
+                Delete
+              </paper-item>
+              <paper-item value='updateColaborador'>
+                Update
+              </paper-item>
+            </paper-listbox>
+          </paper-dropdown-menu>
+          <paper-input name='type' type='hidden' style='display: none;' value='{{colaboradoraction}}'>
+          </paper-input>
+          
+          <paper-button raised class='custom indigo' onclick='document.getElementById("colaboradoraction").submit()'>
+              <iron-icon icon='icon:send'>
+              </iron-icon>
+              Submit
+            </paper-button>
+        </form>
+        <div class='out'>
+        </div>
+      </div>
+      <br>
+      <br>
+    </template>
+    <script>
+      Polymer({
+          is: "view-colaborador",
+               properties: {
+      		    type:{
+                     type: String,
+                     value: "getColaborador"
+                  },
+      			idelement:{
+                     type: String,
+                     value: "0"
+                  },
+                  ajaxParams: {
+                      type: String,
+                      computed: "processParams(type,idelement)"
+                  }
+              },
+              listeners: {
+                  "iron-form-response": "formResponse",
+                  "iron-form-submit": "formSubmit",
+                  "iron-form-error": "formError"
+              },
+              formSubmit: function (event) {
+                 // this.querySelector(".out").innerHTML = JSON.stringify(event.detail);
+              },
+              formResponse: function (event, response) {
+                  console.log(event.detail);
+                  if (200 === response.xhr.status) {
+                      var data = response.xhr;
+                      console.log(response);
+                      if(!data.response.success){
+                          this.querySelector(".out").innerHTML = "Error with the send";
+                      }
+                      else{
+                        this.querySelector(".out").innerHTML = "Successful!!";
+                        if(!this.colaboradoraction.includes("delete")){
+                      	document.location.reload();
+                        }
+                        else{
+                        	document.location.href = "#/colaborador";
+                        	document.location.reload();
+                        }
+                      	
+                      }
+                  }
+              },
+              formError: function (event) {
+                  this.querySelector(".out").innerHTML = event.detail.error;
+              },
+      		processParams: function(type1,idelement1) {
+      			return {
+      				alt: "json",
+      				q: "chrome",
+      				type: type1,
+      				idColaborador2: idelement1
+      			};
+      		},
+      		_getParams: function(type1,idelement1) {
+      			return {
+      				alt: "json",
+      				q: "chrome",
+      				type: type1,
+      				idelement: idelement1
+      			};
+      		}
+        });
+    </script>
+  </dom-module>

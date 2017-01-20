@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta name="description" content>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="generator" content="Polymer Starter Kit">
+    <title>
+      prueba
+    </title>
+    <meta name="theme-color" content="#2da073">
+    <link rel="manifest" href="manifest.json">
+    <meta name="msapplication-TileColor" content="#3372DF">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="application-name" content="PSK">
+    <link rel="icon" size="192x192" href="images/touch/chrome-touch-icon-192x192.png">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black">
+    <meta name="apple-mobile-web-app-title" content="Polymer Starter Kit">
+    <link name="apple-touch-icon" content="images/touch/apple-touch-icon.png">
+    <meta name="msapplication-TileImage" content="images/touch/ms-touch-icon-144x144-precomposed.png">
+    <link rel="stylesheet" href="styles/main.css">
+    <script src="bower_components/webcomponentsjs/webcomponents-lite.js">
+    </script>
+    <link rel="import" href="elements/elements.html">
+    <style is="custom-style" include="shared-styles">
+    </style>
+  </head>
+  <body unresolved>
+    <span id="browser-sync-binding">
+    </span>
+    <template is="dom-bind" id="app">
+      <paper-drawer-panel id="paperDrawerPanel">
+        <paper-scroll-header-panel drawer fixed>
+          <paper-toolbar id="drawerToolbar">
+            <span class="menu-name">
+              Menu
+            </span>
+          </paper-toolbar>
+          <paper-menu class="app-menu" attr-for-selected="data-route" selected="[[route]]">
+            <a data-route="home" href="{{baseUrl}}">
+              <iron-icon icon="home">
+              </iron-icon>
+              <span>
+                Home
+              </span>
+            </a>
+            <paper-submenu>
+              <paper-itemt class="menu-trigger">
+                Lists
+              </paper-itemt>
+              <paper-menu class="menu-content">
+                <a data-route="usuario" href="{{baseUrl}}usuario">
+                  <paper-itemt>
+                    <iron-icon icon="social:group">
+                    </iron-icon>
+                    <span>
+                      Usuario
+                    </span>
+                  </paper-itemt>
+                </a>
+                <a data-route="mensajes" href="{{baseUrl}}mensajes">
+                  <paper-itemt>
+                    <iron-icon icon="social:group">
+                    </iron-icon>
+                    <span>
+                      Mensajes
+                    </span>
+                  </paper-itemt>
+                </a>
+                <a data-route="grupo" href="{{baseUrl}}grupo">
+                  <paper-itemt>
+                    <iron-icon icon="social:group">
+                    </iron-icon>
+                    <span>
+                      Grupo
+                    </span>
+                  </paper-itemt>
+                </a>
+                <a data-route="viaje" href="{{baseUrl}}viaje">
+                  <paper-itemt>
+                    <iron-icon icon="social:group">
+                    </iron-icon>
+                    <span>
+                      Viaje
+                    </span>
+                  </paper-itemt>
+                </a>
+                <a data-route="perfil" href="{{baseUrl}}perfil">
+                  <paper-itemt>
+                    <iron-icon icon="social:group">
+                    </iron-icon>
+                    <span>
+                      Perfil
+                    </span>
+                  </paper-itemt>
+                </a>
+                <a data-route="invitacion" href="{{baseUrl}}invitacion">
+                  <paper-itemt>
+                    <iron-icon icon="social:group">
+                    </iron-icon>
+                    <span>
+                      Invitacion
+                    </span>
+                  </paper-itemt>
+                </a>
+                <a data-route="administrador" href="{{baseUrl}}administrador">
+                  <paper-itemt>
+                    <iron-icon icon="social:group">
+                    </iron-icon>
+                    <span>
+                      Administrador
+                    </span>
+                  </paper-itemt>
+                </a>
+                <a data-route="colaborador" href="{{baseUrl}}colaborador">
+                  <paper-itemt>
+                    <iron-icon icon="social:group">
+                    </iron-icon>
+                    <span>
+                      Colaborador
+                    </span>
+                  </paper-itemt>
+                </a>
+              </paper-menu>
+            </paper-submenu>
+          </paper-menu>
+        </paper-scroll-header-panel>
+        <paper-scroll-header-panel id="menu-content" condenses keep-condensed-header>
+          <paper-toolbar id="mainToolbar" class="tall">
+            <paper-icon-button id="paperToggle" icon="menu" paper-drawer-toggle>
+            </paper-icon-button>
+            <span class="space">
+            </span>
+            <paper-icon-button icon="search">
+            </paper-icon-button>
+            <div class="middle middle-container">
+              <div class="app-name">
+                prueba
+              </div>
+            </div>
+            <div class="bottom bottom-container">
+              <div class="bottom-title">
+                Subtitle
+              </div>
+            </div>
+          </paper-toolbar>
+          <div class="content">
+            <iron-pages attr-for-selected="data-route" selected="{{route}}">
+              <section data-route="usuario" tabIndex="-1">
+                <paper-material elevation="1">
+                  <element-usuario>
+                  </element-usuario>
+                </paper-material>
+              </section>
+              <section data-route="mensajes" tabIndex="-1">
+                <paper-material elevation="1">
+                  <element-mensajes>
+                  </element-mensajes>
+                </paper-material>
+              </section>
+              <section data-route="grupo" tabIndex="-1">
+                <paper-material elevation="1">
+                  <element-grupo>
+                  </element-grupo>
+                </paper-material>
+              </section>
+              <section data-route="viaje" tabIndex="-1">
+                <paper-material elevation="1">
+                  <element-viaje>
+                  </element-viaje>
+                </paper-material>
+              </section>
+              <section data-route="perfil" tabIndex="-1">
+                <paper-material elevation="1">
+                  <element-perfil>
+                  </element-perfil>
+                </paper-material>
+              </section>
+              <section data-route="invitacion" tabIndex="-1">
+                <paper-material elevation="1">
+                  <element-invitacion>
+                  </element-invitacion>
+                </paper-material>
+              </section>
+              <section data-route="administrador" tabIndex="-1">
+                <paper-material elevation="1">
+                  <element-administrador>
+                  </element-administrador>
+                </paper-material>
+              </section>
+              <section data-route="colaborador" tabIndex="-1">
+                <paper-material elevation="1">
+                  <element-colaborador>
+                  </element-colaborador>
+                </paper-material>
+              </section>
+            </iron-pages>
+          </div>
+        </paper-scroll-header-panel>
+      </paper-drawer-panel>
+      <paper-toast id="toast">
+        <span class="toast-hide-button" role="button" tabindex="0" onclick="app.$.toast.hide()">
+          Ok
+        </span>
+      </paper-toast>
+    </template>
+    <script src="scripts/app.js">
+    </script>
+  </body>
+</html>

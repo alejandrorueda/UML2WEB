@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <link href="../bower_components/polymer/polymer.html" rel="import">
+  </head>
+  <dom-module id="element-viaje">
+    <style is="custom-style">
+      paper-button.custom:hover {
+              background-color: var(--paper-indigo-100);
+          }
+      
+          paper-button.indigo {
+              background-color: var(--paper-indigo-500);
+              color: white;
+              --paper-button-raised-keyboard-focus: {
+                  background-color: var(--paper-pink-a200) !important;
+                  color: white !important;
+              };
+          }
+    </style>
+    <iron-ajax auto url="/service/sript.php" params="{{ajaxParams}}" handle-as="json" debounce-duration="300" method="POST" last-response="{{response}}">
+    </iron-ajax>
+    <div style="text-align: center;">
+      <a href="{{baseUrl}}newviaje">
+        <paper-button raised class="button-send">
+          New Viaje
+        </paper-button>
+      </a>
+    </div>
+    <iron-list items="[[response]]" as="item">
+      <template>
+        <div class="out">
+          <paper-material elevation="3">
+            <div class="box-element">
+              <h1 class="title" tabindex="-1">
+                <a href="{{baseUrl}}viaje/{{item.idViaje}}">
+                  {{item.idViaje}}
+                </a>
+              </h1>
+              <label>
+                <strong>
+                  Nombre:
+                </strong>
+                {{item.nombre}}
+              </label>
+              <label>
+                <strong>
+                  Informacion:
+                </strong>
+                {{item.informacion}}
+              </label>
+              <label>
+                <strong>
+                  Transporte:
+                </strong>
+                {{item.transporte}}
+              </label>
+              <label>
+                <strong>
+                  Hospedaje:
+                </strong>
+                {{item.hospedaje}}
+              </label>
+              <label>
+                <strong>
+                  Destino:
+                </strong>
+                {{item.destino}}
+              </label>
+              <label>
+                <strong>
+                  Fechainicio:
+                </strong>
+                {{item.fechainicio}}
+              </label>
+              <label>
+                <strong>
+                  Fechafinal:
+                </strong>
+                {{item.fechafinal}}
+              </label>
+              <label>
+                <strong>
+                  Precio:
+                </strong>
+                {{item.precio}}
+              </label>
+              <label>
+                <strong>
+                  Imagenes:
+                </strong>
+                {{item.imagenes}}
+              </label>
+              <label>
+                <strong>
+                  Etiquetas:
+                </strong>
+                {{item.etiquetas}}
+              </label>
+            </div>
+          </paper-material>
+        </div>
+      </template>
+    </iron-list>
+  </dom-module>
+  <script>
+    Polymer({
+        is: "element-viaje",
+             properties: {
+    		    type:{
+                   type: String,
+                   value: "getAllViaje"
+                },
+                ajaxParams: {
+                    type: String,
+                    computed: "processParams(type)"
+                }
+            },
+    		processParams: function(type1) {
+    			return {
+    				alt: "json",
+    				q: "chrome",
+    				type: type1
+    			};
+    		}
+      });
+  </script>
+</html>

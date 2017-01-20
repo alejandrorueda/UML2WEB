@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<link href='../bower_components/polymer/polymer.html' rel='import'>
+  <link href='shared-styles.html' rel='import'>
+  <dom-module id='view-invitacion'>
+    <template>
+      <style include='shared-styles'>
+        /* Reglas CSS para tu elemento */
+        	 paper-button.custom:hover {
+                background-color: var(--paper-indigo-100);
+            }
+        	  paper-tab[link] a {
+        	    @apply(--layout-horizontal);
+        	    @apply(--layout-center-center);
+        	    color: #fff;
+        	    background: #5BCCAA;
+        	    text-decoration: none;
+        	  } 	
+        
+            paper-button.indigo {
+                background-color: var(--paper-indigo-500);
+                color: white;
+                --paper-button-raised-keyboard-focus: {
+                    background-color: var(--paper-pink-a200) !important;
+                    color: white !important;
+                };
+            }
+      </style>
+      <iron-ajax auto headers='{"Content-Type": "application/json;charset=utf-8"}' url='[[urlApi]]' params='{{ajaxParams}}' handle-as='json' debounce-duration='300' method='POST' last-response='{{response}}'>
+        </iron-ajax>
+      <div class='card'>
+        <form is='iron-form' method='post' action='[[urlApi]]' id='invitacionaction'>
+          
+          <div style='text-align: center;'>
+            <a href='#/viewusuario/{{response.Fkusuario}}'>
+              <paper-button raised class='button-send'>
+                View Usuario
+              </paper-button>
+            </a>
+          </div>
+          <paper-input name='codigo' label='Codigo' required type='text'  maxlength='1'   value='{{response.Codigo}}'>
+          </paper-input>
+          <paper-checkbox name='activo' label='Activo' required type     value='{{response.Activo}}'>
+          </paper-checkbox>
+          <paper-dropdown-menu label='Choose an action'>
+            <paper-listbox class='dropdown-content' attr-for-selected='value' selected='{{invitacionaction}}'>
+              <paper-item value='deleteInvitacion'>
+                Delete
+              </paper-item>
+              <paper-item value='updateInvitacion'>
+                Update
+              </paper-item>
+            </paper-listbox>
+          </paper-dropdown-menu>
+          <paper-input name='type' type='hidden' style='display: none;' value='{{invitacionaction}}'>
+          </paper-input>
+          <paper-input name='idInvitacion' type='hidden' value='{{idelement}}' style='display: none;'>
+          </paper-input>
+          <paper-button raised class='custom indigo' onclick='document.getElementById("invitacionaction").submit()'>
+              <iron-icon icon='icon:send'>
+              </iron-icon>
+              Submit
+            </paper-button>
+        </form>
+        <div class='out'>
+        </div>
+      </div>
+      <br>
+      <br>
+    </template>
+    <script>
+      Polymer({
+          is: "view-invitacion",
+               properties: {
+      		    type:{
+                     type: String,
+                     value: "getInvitacion"
+                  },
+      			idelement:{
+                     type: String,
+                     value: "0"
+                  },
+                  ajaxParams: {
+                      type: String,
+                      computed: "processParams(type,idelement)"
+                  }
+              },
+              listeners: {
+                  "iron-form-response": "formResponse",
+                  "iron-form-submit": "formSubmit",
+                  "iron-form-error": "formError"
+              },
+              formSubmit: function (event) {
+                 // this.querySelector(".out").innerHTML = JSON.stringify(event.detail);
+              },
+              formResponse: function (event, response) {
+                  console.log(event.detail);
+                  if (200 === response.xhr.status) {
+                      var data = response.xhr;
+                      console.log(response);
+                      if(!data.response.success){
+                          this.querySelector(".out").innerHTML = "Error with the send";
+                      }
+                      else{
+                        this.querySelector(".out").innerHTML = "Successful!!";
+                        if(!this.invitacionaction.includes("delete")){
+                      	document.location.reload();
+                        }
+                        else{
+                        	document.location.href = "#/invitacion";
+                        	document.location.reload();
+                        }
+                      	
+                      }
+                  }
+              },
+              formError: function (event) {
+                  this.querySelector(".out").innerHTML = event.detail.error;
+              },
+      		processParams: function(type1,idelement1) {
+      			return {
+      				alt: "json",
+      				q: "chrome",
+      				type: type1,
+      				idInvitacion: idelement1
+      			};
+      		},
+      		_getParams: function(type1,idelement1) {
+      			return {
+      				alt: "json",
+      				q: "chrome",
+      				type: type1,
+      				idelement: idelement1
+      			};
+      		}
+        });
+    </script>
+  </dom-module>

@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<link href='../bower_components/polymer/polymer.html' rel='import'>
+  <link href='shared-styles.html' rel='import'>
+  <dom-module id='element-invitacion'>
+    <template>
+      <style include='shared-styles'>
+        paper-button.custom:hover {
+                background-color: var(--paper-indigo-100);
+            }
+        
+            paper-button.indigo {
+                background-color: var(--paper-indigo-500);
+                color: white;
+                --paper-button-raised-keyboard-focus: {
+                    background-color: var(--paper-pink-a200) !important;
+                    color: white !important;
+                };
+            }
+      </style>
+      <iron-ajax auto headers='{"Content-Type": "application/json;charset=utf-8"}' url='[[urlApi]]' params='{{ajaxParams}}' handle-as='json' debounce-duration='300' method='POST' last-response='{{response}}'>
+      </iron-ajax>
+      <div style='text-align: center;'>
+        <a href='#/newinvitacion'>
+          <paper-button raised class='button-send'>
+            New Invitacion
+          </paper-button>
+        </a>
+      </div>
+      <iron-list items='[[response]]' as='item'>
+        <template>
+          <div class='card'>
+            <paper-material elevation='3'>
+              <div class='box-element'>
+                <h1 class='title' tabindex='-1'>
+                  <a href='#/viewinvitacion/{{item.Idinvitacion}}'>
+                    {{item.Idinvitacion}}
+                  </a>
+                </h1>
+              </div>
+            </paper-material>
+          </div>
+        </template>
+      </iron-list>
+    </template>
+    <script>
+      Polymer({
+          is: "element-invitacion",
+               properties: {
+      		    type:{
+                     type: String,
+                     value: "getAllInvitacion"
+                  },
+      			idelement:{
+                     type: String,
+                     value: "0"
+                  },
+                  ajaxParams: {
+                      type: String,
+                      computed: "processParams(type,idelement)"
+                  }
+              },
+      		processParams: function(type1,idelement1) {
+      			return {
+      				alt: "json",
+      				q: "chrome",
+      				type: type1,
+      				idelement: idelement1
+      			};
+      		}
+        });
+    </script>
+  </dom-module>

@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<link href='../bower_components/polymer/polymer.html' rel='import'>
+  <link href='shared-styles.html' rel='import'>
+  <dom-module id='new-mensajes'>
+    <template>
+      <style include='shared-styles'>
+        /* Reglas CSS para tu elemento */
+        	 paper-button.custom:hover {
+                background-color: var(--paper-indigo-100);
+            }
+        
+            paper-button.indigo {
+                background-color: var(--paper-indigo-500);
+                color: white;
+                --paper-button-raised-keyboard-focus: {
+                    background-color: var(--paper-pink-a200) !important;
+                    color: white !important;
+                };
+            }
+      </style>
+      <div class='card'>
+        <form is='iron-form' method='post' action='[[urlApi]]' id='mensajes'>
+          <paper-input name='respuestas' label='Respuestas'  type='hidden' style='display: none;' value='null' >
+          </paper-input>
+          <iron-autogrow-textarea name='descripcion' label='Descripcion' required  style='height: 171px; width: 899px;'  placeholder='Descripcion'>
+          </iron-autogrow-textarea>
+          <paper-input name='asunto' label='Asunto' required type='text'  maxlength='150' >
+          </paper-input>
+          
+          <paper-input name='type' type='hidden' style='display: none;' value='{{type}}'>
+          </paper-input>
+          <paper-button raised class='custom indigo' onclick='document.getElementById("mensajes").submit()'>
+              <iron-icon icon='icon:send'>
+              </iron-icon>
+              Send
+            </paper-button>
+          <div class='output'>
+          </div>
+          <br>
+          <div class='outputServer'>
+          </div>
+          <br>
+        </form>
+      </div>
+    </template>
+    <script>
+      Polymer({
+          is: "new-mensajes",
+               properties: {
+      		    type:{
+                     type: String,
+                     value: "addMensajes"
+                  }
+              },
+              listeners: {
+                  "iron-form-response": "formResponse",
+                  "iron-form-submit": "formSubmit",
+                  "iron-form-error": "formError"
+              },
+              formSubmit: function (event) {
+                //  this.querySelector(".output").innerHTML = JSON.stringify(event.detail);
+              },
+              formResponse: function (event, response) {
+                  console.log(event.detail);
+                  if (200 === response.xhr.status) {
+                      var data = response.xhr;
+                      console.log(response);
+                      if(!data.response.success){
+                          this.querySelector(".output").innerHTML = "Error with the send";
+                      }
+                      else{
+                      	this.querySelector(".output").innerHTML = "Successful!!";
+                      	document.location.href = "#/mensajes";
+                      }
+                  }
+              },
+              formError: function (event) {
+                  this.querySelector(".outputServer").innerHTML = event.detail.error;
+              }
+        });
+    </script>
+  </dom-module>

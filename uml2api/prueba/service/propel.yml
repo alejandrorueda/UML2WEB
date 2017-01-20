@@ -1,0 +1,25 @@
+propel:
+  database:
+      connections:
+          prueba:
+              adapter: mysql
+              classname: Propel\Runtime\Connection\DebugPDO
+              dsn: mysql:host=sql8.freesqldatabase.com;dbname=sql8140226
+              user: sql8140226
+              password: Dyxl3A9Yu7
+              attributes:
+  runtime:
+      log:
+          defaultLogger:
+              type: stream
+              path: ./propel_log.txt
+              level: 100
+      defaultConnection: prueba
+      connections:
+          - prueba
+  generator:
+      schema:
+          autoPackage: true
+      defaultConnection: prueba
+      connections:
+          - prueba	  	  

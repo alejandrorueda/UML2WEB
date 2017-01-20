@@ -1,0 +1,464 @@
+
+Fri Oct 14 12:54:36 CEST 2016
+================================================================================
+Start of user code misViajes function
+   	   // file contents 
+   	   // End of user code
+Start of user code viajeInformacion function
+   	   // file contents 
+   	   // End of user code
+Start of user code eliminarParticipante function
+   	   // file contents 
+   	   // End of user code
+Start of user code mensajes function
+   	   // file contents 
+   	   // End of user code
+Start of user code Viaje function
+   	   // file contents 
+          $con = Propel::getWriteConnection(ViajeTableMap::DATABASE_NAME);
+   
+   	   $con->beginTransaction();
+   
+          try{
+          
+          if(!$this->exists($idGrupo) && !is_null ($idGrupo)){
+            $grupo = $this->get($idGrupo);
+   	   }
+          else{
+            $grupo = new Grupo(); 
+            $grupo= $grupo->add($idGrupo , $informacionGrupo
+             , $nombreGrupo
+            );
+           }
+   
+          $this->addGrupo($grupo);
+          $this->save($con);
+          $con->commit();
+          return $this;
+   	   }catch (Exception $e) {
+   	
+   		 $con->rollback(); //en caso de que se produzca alguna excepcion la transacci?n ser? cancelada
+   		 throw $e;
+   		}
+   	   // End of user code
+Start of user code escribirMensaje function
+   	   // file contents 
+   	   // End of user code
+Start of user code nuevoViaje function
+   	   // file contents 
+   	   // End of user code
+Start of user code añadirParticipante function
+   	   // file contents 
+   	   // End of user code
+Start of user code viajes function
+   	   // file contents 
+   	   // End of user code
+Start of user code usuarioApuntado function
+   	   // file contents 
+   	   // End of user code
+
+Fri Oct 14 12:59:49 CEST 2016
+================================================================================
+Start of user code misViajes function
+   	   // file contents 
+   	   // End of user code
+Start of user code viajeInformacion function
+   	   // file contents 
+   	   // End of user code
+Start of user code eliminarParticipante function
+   	   // file contents 
+   	   // End of user code
+Start of user code mensajes function
+   	   // file contents 
+   	   // End of user code
+Start of user code Viaje function
+   	   // file contents 
+          $con = Propel::getWriteConnection(ViajeTableMap::DATABASE_NAME);
+   
+   	   $con->beginTransaction();
+   
+          try{
+          
+          if(!$this->exists($idGrupo) && !is_null ($idGrupo)){
+            $grupo = $this->get($idGrupo);
+   	   }
+          else{
+            $grupo = new Grupo(); 
+            $grupo= $grupo->add($idGrupo , $informacionGrupo
+             , $nombreGrupo
+            );
+           }
+   
+          $this->addGrupo($grupo);
+          $this->save($con);
+          $con->commit();
+          return $this;
+   	   }catch (Exception $e) {
+   	
+   		 $con->rollback(); //en caso de que se produzca alguna excepcion la transacci?n ser? cancelada
+   		 throw $e;
+   		}
+   	   // End of user code
+Start of user code escribirMensaje function
+   	   // file contents 
+   	   // End of user code
+Start of user code nuevoViaje function
+   	   // file contents 
+   	   // End of user code
+Start of user code añadirParticipante function
+   	   // file contents 
+   	   // End of user code
+Start of user code viajes function
+   	   // file contents 
+   	   // End of user code
+Start of user code usuarioApuntado function
+   	   // file contents 
+   	   // End of user code
+
+Fri Oct 14 13:00:15 CEST 2016
+================================================================================
+Start of user code misViajes function
+   	   // file contents 
+   	   // End of user code
+Start of user code viajeInformacion function
+   	   // file contents 
+   	   // End of user code
+Start of user code eliminarParticipante function
+   	   // file contents 
+   	   // End of user code
+Start of user code mensajes function
+   	   // file contents 
+   	   // End of user code
+Start of user code Viaje function
+   	   // file contents 
+          $con = Propel::getWriteConnection(ViajeTableMap::DATABASE_NAME);
+   
+   	   $con->beginTransaction();
+   
+          try{
+          
+          if(!$this->exists($idGrupo) && !is_null ($idGrupo)){
+            $grupo = $this->get($idGrupo);
+   	   }
+          else{
+            $grupo = new Grupo(); 
+            $grupo= $grupo->add($idGrupo , $informacionGrupo
+             , $nombreGrupo
+            );
+           }
+   
+          $this->addGrupo($grupo);
+          $this->save($con);
+          $con->commit();
+          return $this;
+   	   }catch (Exception $e) {
+   	
+   		 $con->rollback(); //en caso de que se produzca alguna excepcion la transacci?n ser? cancelada
+   		 throw $e;
+   		}
+   	   // End of user code
+Start of user code escribirMensaje function
+   	   // file contents 
+   	   // End of user code
+Start of user code nuevoViaje function
+   	   // file contents 
+   	   // End of user code
+Start of user code añadirParticipante function
+   	   // file contents 
+   	   // End of user code
+Start of user code viajes function
+   	   // file contents 
+   	   // End of user code
+Start of user code usuarioApuntado function
+   	   // file contents 
+   	   // End of user code
+
+Fri Oct 14 13:01:17 CEST 2016
+================================================================================
+Start of user code misViajes function
+   	   // file contents 
+   	   // End of user code
+Start of user code viajeInformacion function
+   	   // file contents 
+   	   // End of user code
+Start of user code eliminarParticipante function
+   	   // file contents 
+   	   // End of user code
+Start of user code mensajes function
+   	   // file contents 
+   	   // End of user code
+Start of user code Viaje function
+   	   // file contents 
+          $con = Propel::getWriteConnection(ViajeTableMap::DATABASE_NAME);
+   
+   	   $con->beginTransaction();
+   
+          try{
+          
+          if(!$this->exists($idGrupo) && !is_null ($idGrupo)){
+            $grupo = $this->get($idGrupo);
+   	   }
+          else{
+            $grupo = new Grupo(); 
+            $grupo= $grupo->add($idGrupo , $informacionGrupo
+             , $nombreGrupo
+            );
+           }
+   
+          $this->addGrupo($grupo);
+          $this->save($con);
+          $con->commit();
+          return $this;
+   	   }catch (Exception $e) {
+   	
+   		 $con->rollback(); //en caso de que se produzca alguna excepcion la transacci?n ser? cancelada
+   		 throw $e;
+   		}
+   	   // End of user code
+Start of user code escribirMensaje function
+   	   // file contents 
+   	   // End of user code
+Start of user code nuevoViaje function
+   	   // file contents 
+   	   // End of user code
+Start of user code añadirParticipante function
+   	   // file contents 
+   	   // End of user code
+Start of user code viajes function
+   	   // file contents 
+   	   // End of user code
+Start of user code usuarioApuntado function
+   	   // file contents 
+   	   // End of user code
+
+Fri Oct 14 13:02:07 CEST 2016
+================================================================================
+Start of user code misViajes function
+   	   // file contents 
+   	   // End of user code
+Start of user code viajeInformacion function
+   	   // file contents 
+   	   // End of user code
+Start of user code eliminarParticipante function
+   	   // file contents 
+   	   // End of user code
+Start of user code mensajes function
+   	   // file contents 
+   	   // End of user code
+Start of user code Viaje function
+   	   // file contents 
+          $con = Propel::getWriteConnection(ViajeTableMap::DATABASE_NAME);
+   
+   	   $con->beginTransaction();
+   
+          try{
+          
+          if(!$this->exists($idGrupo) && !is_null ($idGrupo)){
+            $grupo = $this->get($idGrupo);
+   	   }
+          else{
+            $grupo = new Grupo(); 
+            $grupo= $grupo->add($idGrupo , $informacionGrupo
+             , $nombreGrupo
+            );
+           }
+   
+          $this->addGrupo($grupo);
+          $this->save($con);
+          $con->commit();
+          return $this;
+   	   }catch (Exception $e) {
+   	
+   		 $con->rollback(); //en caso de que se produzca alguna excepcion la transacci?n ser? cancelada
+   		 throw $e;
+   		}
+   	   // End of user code
+Start of user code escribirMensaje function
+   	   // file contents 
+   	   // End of user code
+Start of user code nuevoViaje function
+   	   // file contents 
+   	   // End of user code
+Start of user code añadirParticipante function
+   	   // file contents 
+   	   // End of user code
+Start of user code viajes function
+   	   // file contents 
+   	   // End of user code
+Start of user code usuarioApuntado function
+   	   // file contents 
+   	   // End of user code
+
+Fri Oct 14 13:19:58 CEST 2016
+================================================================================
+Start of user code misViajes function
+   	   // file contents 
+   	   // End of user code
+Start of user code viajeInformacion function
+   	   // file contents 
+   	   // End of user code
+Start of user code eliminarParticipante function
+   	   // file contents 
+   	   // End of user code
+Start of user code mensajes function
+   	   // file contents 
+   	   // End of user code
+Start of user code Viaje function
+   	   // file contents 
+          $con = Propel::getWriteConnection(ViajeTableMap::DATABASE_NAME);
+   
+   	   $con->beginTransaction();
+   
+          try{
+          
+          if(!$this->exists($idGrupo) && !is_null ($idGrupo)){
+            $grupo = $this->get($idGrupo);
+   	   }
+          else{
+            $grupo = new Grupo(); 
+            $grupo= $grupo->add($idGrupo , $informacionGrupo
+             , $nombreGrupo
+            );
+           }
+   
+          $this->addGrupo($grupo);
+          $this->save($con);
+          $con->commit();
+          return $this;
+   	   }catch (Exception $e) {
+   	
+   		 $con->rollback(); //en caso de que se produzca alguna excepcion la transacci?n ser? cancelada
+   		 throw $e;
+   		}
+   	   // End of user code
+Start of user code escribirMensaje function
+   	   // file contents 
+   	   // End of user code
+Start of user code nuevoViaje function
+   	   // file contents 
+   	   // End of user code
+Start of user code añadirParticipante function
+   	   // file contents 
+   	   // End of user code
+Start of user code viajes function
+   	   // file contents 
+   	   // End of user code
+Start of user code usuarioApuntado function
+   	   // file contents 
+   	   // End of user code
+
+Fri Oct 14 13:23:54 CEST 2016
+================================================================================
+Start of user code misViajes function
+   	   // file contents 
+   	   // End of user code
+Start of user code viajeInformacion function
+   	   // file contents 
+   	   // End of user code
+Start of user code eliminarParticipante function
+   	   // file contents 
+   	   // End of user code
+Start of user code mensajes function
+   	   // file contents 
+   	   // End of user code
+Start of user code Viaje function
+   	   // file contents 
+          $con = Propel::getWriteConnection(ViajeTableMap::DATABASE_NAME);
+   
+   	   $con->beginTransaction();
+   
+          try{
+          
+          if(!$this->exists($idGrupo) && !is_null ($idGrupo)){
+            $grupo = $this->get($idGrupo);
+   	   }
+          else{
+            $grupo = new Grupo(); 
+            $grupo= $grupo->add($idGrupo , $informacionGrupo
+             , $nombreGrupo
+            );
+           }
+   
+          $this->addGrupo($grupo);
+          $this->save($con);
+          $con->commit();
+          return $this;
+   	   }catch (Exception $e) {
+   	
+   		 $con->rollback(); //en caso de que se produzca alguna excepcion la transacci?n ser? cancelada
+   		 throw $e;
+   		}
+   	   // End of user code
+Start of user code escribirMensaje function
+   	   // file contents 
+   	   // End of user code
+Start of user code nuevoViaje function
+   	   // file contents 
+   	   // End of user code
+Start of user code añadirParticipante function
+   	   // file contents 
+   	   // End of user code
+Start of user code viajes function
+   	   // file contents 
+   	   // End of user code
+Start of user code usuarioApuntado function
+   	   // file contents 
+   	   // End of user code
+
+Fri Oct 14 13:25:20 CEST 2016
+================================================================================
+Start of user code misViajes function
+   	   // file contents 
+   	   // End of user code
+Start of user code viajeInformacion function
+   	   // file contents 
+   	   // End of user code
+Start of user code eliminarParticipante function
+   	   // file contents 
+   	   // End of user code
+Start of user code mensajes function
+   	   // file contents 
+   	   // End of user code
+Start of user code Viaje function
+   	   // file contents 
+          $con = Propel::getWriteConnection(ViajeTableMap::DATABASE_NAME);
+   
+   	   $con->beginTransaction();
+   
+          try{
+          
+          if(!$this->exists($idGrupo) && !is_null ($idGrupo)){
+            $grupo = $this->get($idGrupo);
+   	   }
+          else{
+            $grupo = new Grupo(); 
+            $grupo= $grupo->add($idGrupo , $informacionGrupo
+             , $nombreGrupo
+            );
+           }
+   
+          $this->addGrupo($grupo);
+          $this->save($con);
+          $con->commit();
+          return $this;
+   	   }catch (Exception $e) {
+   	
+   		 $con->rollback(); //en caso de que se produzca alguna excepcion la transacci?n ser? cancelada
+   		 throw $e;
+   		}
+   	   // End of user code
+Start of user code escribirMensaje function
+   	   // file contents 
+   	   // End of user code
+Start of user code nuevoViaje function
+   	   // file contents 
+   	   // End of user code
+Start of user code añadirParticipante function
+   	   // file contents 
+   	   // End of user code
+Start of user code viajes function
+   	   // file contents 
+   	   // End of user code
+Start of user code usuarioApuntado function
+   	   // file contents 
+   	   // End of user code

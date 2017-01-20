@@ -1,0 +1,2767 @@
+-- @nsURI TagML=http://tags/1.0
+-- @nsURI UML=http://www.eclipse.org/uml2/5.0.0/UML
+
+module uml2tagml;
+create OUT : TagML from IN : UML;
+
+helper def : getPrimaryKey(s : UML!Class) : String = if(s.getAllAttributes()->select(l | l.isID and s=l.class)->size()=0) then 'id'.concat(s.name.substring(1,1).toUpper()+s.name.substring(2,s.name.size())) else s.getAllAttributes()->select(l| l.isID and s=l.class)->asOrderedSet()->first().name endif;
+helper def : getPrimaryKey2(s : UML!Class) : String = if(s.getAllAttributes()->select(l | l.isID and s=l.class)->size()=0) then 'id'.concat(s.name.toLower()) else s.getAllAttributes()->select(l| l.isID and s=l.class)->asOrderedSet()->first().name endif;
+--helper def:  getProperties(c : UML!Class) : OclAny = c.getAllAttributes()->select(l | c=l.class and l.upper>0 and not l.getModel().eContents()->select(t | t.oclIsTypeOf(UML!Class))->exists(m | l.type=m));
+helper def:  getPropertiesFk1(c : UML!Class) : OclAny = c.getAllAttributes()->select(l | not thisModule.getProperties(c)->includes(l) and not l.isID and l.upperBound()=1 and not l.type.name.oclIsUndefined());
+helper def:  getProperties(c : UML!Class) : OclAny = c.getAllAttributes()->asSet();
+helper def:  getUpperFirst(c : String) : OclAny = c.substring(1,1).toUpper()+c.substring(2,c.size());
+helper def : getUrlApi() : String = '[[urlApi]]';
+
+
+rule Elements{
+	from
+		c: UML!Model
+	to
+	   archive1: TagML!Archive(
+	      name <- c.name
+	   ),
+	   folderSRC: TagML!Folder(
+	     name<- 'src',
+		 archive<- archive1,
+		 contents<- thisModule.App(c),
+		 contents<- c.eContents()->select(l | l.oclIsTypeOf(UML!Class))->collect(l | thisModule.Contents(l)),
+		 contents<- c.eContents()->select(l | l.oclIsTypeOf(UML!Class))->collect(l | thisModule.FormElement(l,folderSRC)),
+		 contents<- c.eContents()->select(l | l.oclIsTypeOf(UML!Class))->collect(l | thisModule.MenuElement(l,folderSRC)),
+		 contents<- c.eContents()->select(l | l.oclIsTypeOf(UML!Class))->collect(l | thisModule.VistaElement(l,folderSRC))
+	   ),
+	   folderScripts: TagML!Folder(
+	   name<- 'scripts',
+	   archive <- archive1,
+	   contents<- thisModule.JSGlobals(c)
+	   ),
+	   document: TagML!Document(
+	     archive<-archive1,
+	     name <- 'bower.json',
+		 root<- thisModule.BowerJson(document)
+		 
+		 
+	   )
+	   
+}
+
+
+
+
+lazy rule Contents{
+	from 
+	  c: UML!Class
+	to
+	  document1: TagML!Document(
+	  	name<-'element-'+c.name.toLower()+'.html'
+	  ),		
+	  html: TagML!Tag(
+		document<-document1,
+		content<-thisModule.TagContents(c,html)
+	  )	
+}
+
+
+lazy rule TagContents {
+	from 
+	  c: UML!Class,
+	  html: TagML!Tag
+	to
+      
+	  importHead: TagML!Tag(
+	    name<-'link',
+		parent<-html
+	  ),
+	  href: TagML!Attribute(
+	    name<-'href',
+		value<-'../bower_components/polymer/polymer.html',
+		tag<-importHead
+	  ),
+	  rel: TagML!Attribute(
+	    name<-'rel',
+		value<-'import',
+		tag<-importHead
+	  ),
+	  importHead1: TagML!Tag(
+	    name<-'link',
+		parent<-html
+	  ),
+	   href1: TagML!Attribute(
+	    name<-'href',
+		value<-'shared-styles.html',
+		tag<-importHead1
+	  ),
+	  rel1: TagML!Attribute(
+	    name<-'rel',
+		value<-'import',
+		tag<-importHead1
+	  ),
+	  dom: TagML!Tag(
+	    name<-'dom-module',
+		parent<-html,
+		content<-thisModule.ContentMainElement(c,dom)
+	  ),
+	  iddom: TagML!Attribute(
+	  	name<-'id',
+		value<-'element-'+c.name.toLower(),
+		tag<-dom
+	  ),
+	  script: TagML!Tag(
+	   	name<-'script',
+		parent<-dom
+	  ),
+	  contentScript: TagML!Text(
+	  	content<-'Polymer({
+    is: "'+'element-'+c.name.toLower()+'",
+         properties: {
+		    type:{
+               type: String,
+               value: "getAll'+c.name.substring(1,1).toUpper()+c.name.substring(2,c.name.size())+'"
+            },
+			idelement:{
+               type: String,
+               value: "0"
+            },
+            ajaxParams: {
+                type: String,
+                computed: "processParams(type,idelement)"
+            }
+        },
+		processParams: function(type1,idelement1) {
+			return {
+				alt: "json",
+				q: "chrome",
+				type: type1,
+				idelement: idelement1
+			};
+		}
+  });',
+      parent<-script
+	  )
+	  
+		
+}
+
+lazy rule ContentMainElement{
+	from 
+	  c: UML!Class,
+	  dom: TagML!Tag
+	to
+	 templateht: TagML!Tag(
+	    name<-'template',
+		parent<-dom
+	  ),
+	  style: TagML!Tag(
+	    name<-'style',
+		parent<-templateht
+	  ),
+	  styleis: TagML!Attribute(
+	    name<-'include',
+		value<-'shared-styles',
+		tag<-style
+	  ),
+	  contentstylet: TagML!Text(
+	  	content<-'  
+	 paper-button.custom:hover {
+        background-color: var(--paper-indigo-100);
+    }
+
+    paper-button.indigo {
+        background-color: var(--paper-indigo-500);
+        color: white;
+        --paper-button-raised-keyboard-focus: {
+            background-color: var(--paper-pink-a200) !important;
+            color: white !important;
+        };
+    }',
+      parent<-style
+	  ),
+	  ironajax: TagML!Tag(
+	  	name<-'iron-ajax',
+		parent<-templateht
+	  ),
+	  autoajax: TagML!Attribute(
+	    name<-'auto',
+		tag<-ironajax
+	  ),
+	  headerajax: TagML!Attribute(
+	    name<-'headers',
+		value<-'{"Content-Type": "application/json;charset=utf-8"}',
+		tag<-ironajax
+	  ),
+	  urlajax: TagML!Attribute(
+	    name<-'url',
+		value<-thisModule.getUrlApi(),
+		tag<-ironajax
+	  ),
+	  paramsajax: TagML!Attribute(
+	    name<-'params',
+		value<-'{{ajaxParams}}',
+		tag<-ironajax
+	  ),
+	  handleajax: TagML!Attribute(
+	    name<-'handle-as',
+		value<-'json',
+		tag<-ironajax
+	  ),
+	  durationajax: TagML!Attribute(
+	    name<-'debounce-duration',
+		value<-'300',
+		tag<-ironajax
+	  ),
+	  methodajax: TagML!Attribute(
+	    name<-'method',
+		value<-'POST',
+		tag<-ironajax
+	  ),
+	  lastajax: TagML!Attribute(
+	    name<-'last-response',
+		value<-'{{response}}',
+		tag<-ironajax
+	  ),
+      div1: TagML!Tag(
+	    name<-'div',
+		parent<-templateht
+	  ),
+	  acreate: TagML!Tag(
+	  	name<-'a',
+	    parent<-div1
+	  ),
+	  pappercreate:TagML!Tag(
+	  	name<-'paper-button',
+		parent<-acreate
+	  ),
+	  stylediv1: TagML!Attribute(
+	    name<-'style',
+		value<-'text-align: center;',
+		tag<-div1
+	  ),
+	  hrefacreate: TagML!Attribute(
+	    name<-'href',
+		value<-'#/new'+c.name.toLower(),
+		tag<-acreate
+	  ),
+	  textpappercreate: TagML!Text(
+	    content<-'New '+c.name.substring(1,1).toUpper()+c.name.substring(2,c.name.size()),
+		parent<-pappercreate
+	  ),
+	  rapappercreate: TagML!Attribute(
+	    name<-'raised',
+		tag<-pappercreate
+	  ),
+	  classpappercreate: TagML!Attribute(
+	    name<-'class',
+		value<-'button-send',
+		tag<-pappercreate
+	  ),
+	  ironlist:TagML!Tag(
+	  	name<-'iron-list',
+		parent<-templateht
+	  ),
+	  itemironlist: TagML!Attribute(
+	    name<-'items',
+		value<-'[[response]]',
+		tag<-ironlist
+	  ),
+	  asironlist: TagML!Attribute(
+	    name<-'as',
+		value<-'item',
+		tag<-ironlist
+	  ),
+	  template: TagML!Tag(
+	    name<-'template',
+        parent<-ironlist
+	  ),
+	  divtempleate: TagML!Tag(
+	    name<-'div',
+        parent<-template
+	  ),
+	  classdivtemplate: TagML!Attribute(
+	    name<-'class',
+		value<-'card',
+		tag<-divtempleate
+	  ),
+	  papermaterial: TagML!Tag(
+	    name<-'paper-material',
+        parent<-divtempleate
+	  ),
+	  elevarionpapermaterial: TagML!Attribute(
+	    name<-'elevation',
+		value<-'3',
+		tag<-papermaterial
+	  ),
+	  h1papermaterial: TagML!Tag(
+	    name<-'h1'
+	  ),
+	  classh1papermaterial: TagML!Attribute(
+	    name<-'class',
+		value<-'title',
+		tag<-h1papermaterial
+	  ),
+	  indexh1papermaterial: TagML!Attribute(
+	    name<-'tabindex',
+		value<-'-1',
+		tag<-h1papermaterial
+	  ),
+	  ah1: TagML!Tag(
+	    name<-'a',
+        parent<-h1papermaterial
+	  ),
+	  hrefah1: TagML!Attribute(
+	    name<-'href',
+		value<-'#/view'+c.name.toLower()+'/{{item.'+thisModule.getPrimaryKey2(c).substring(1,1).toUpper()+thisModule.getPrimaryKey2(c).substring(2,thisModule.getPrimaryKey2(c).size())+'}}',
+		tag<-ah1
+	  ),
+	  textah1: TagML!Text(
+	    content<-'{{item.'+thisModule.getPrimaryKey2(c).substring(1,1).toUpper()+thisModule.getPrimaryKey2(c).substring(2,thisModule.getPrimaryKey2(c).size())+'}}',
+		parent<-ah1
+	  ),
+	  divpapermaterial: TagML!Tag(
+	    name<-'div',
+        parent<-papermaterial,
+		content<-h1papermaterial--,
+		--content<-c.getAllAttributes()->select(l | c=l.class and l.upper>0 and not l.getModel().eContents()->select(t | t.oclIsTypeOf(UML!Class))->exists(m | l.type=m))->collect(a | thisModule.InformationElement(a,divpapermaterial) )
+	  ),
+	  classdivpapermaterial: TagML!Attribute(
+	    name<-'class',
+		value<-'box-element',
+		tag<-divpapermaterial
+	  )
+		
+}
+
+lazy rule InformationElement {
+	from 
+	  c: UML!Property,
+	  div1: TagML!Tag
+	to
+	  p: TagML!Tag(
+	    name<-'p',
+		parent<-div1
+	  ),
+      label: TagML!Tag(
+	    name<-'label',
+		parent<-p
+	  ),
+	  strong: TagML!Tag(
+	    name<-'strong',
+		parent<-label
+	  ),
+	  textstrong: TagML!Text(
+	    content<-c.name.substring(1,1).toUpper()+c.name.substring(2,c.name.size())+':',
+		parent<-strong
+	  ),
+	  textlabel: TagML!Text(
+	    content<-'{{item.'+c.name.substring(1,1).toUpper()+c.name.substring(2,c.name.size())+'}}',
+		parent<-label
+	  )
+}
+
+
+	 
+lazy rule App{
+from 
+	  c: UML!Model
+	to
+	  document1: TagML!Document(
+	  	name<-'my-app.html'
+	  ),		
+	  html: TagML!Tag(
+		document<-document1,
+		content<-textpaperelements,
+		content<-createlements
+	  ),
+	   textpaperelements: TagML!Text(
+	   	 content<-'<link rel="import" href="../bower_components/polymer/polymer.html">
+<link rel="import" href="../bower_components/app-layout/app-drawer/app-drawer.html">
+<link rel="import" href="../bower_components/app-layout/app-drawer-layout/app-drawer-layout.html">
+<link rel="import" href="../bower_components/app-layout/app-header/app-header.html">
+<link rel="import" href="../bower_components/app-layout/app-header-layout/app-header-layout.html">
+<link rel="import" href="../bower_components/app-layout/app-scroll-effects/app-scroll-effects.html">
+<link rel="import" href="../bower_components/app-layout/app-toolbar/app-toolbar.html">
+<link rel="import" href="../bower_components/app-route/app-location.html">
+<link rel="import" href="../bower_components/app-route/app-route.html">
+<link rel="import" href="../bower_components/iron-pages/iron-pages.html">
+<link rel="import" href="../bower_components/iron-selector/iron-selector.html">
+<link rel="import" href="../bower_components/iron-icons/iron-icons.html">
+<link rel="import" href="../bower_components/iron-icons/social-icons.html">
+<link rel="import" href="../bower_components/iron-icons/maps-icons.html">
+<link rel="import" href="../bower_components/iron-icons/social-icons.html">
+<link rel="import" href="../bower_components/iron-icons/image-icons.html">
+
+<!-- Paper elements -->
+<link rel="import" href="../bower_components/paper-drawer-panel/paper-drawer-panel.html">
+<link rel="import" href="../bower_components/paper-icon-button/paper-icon-button.html">
+<link rel="import" href="../bower_components/paper-item/paper-item.html">
+<link rel="import" href="../bower_components/paper-material/paper-material.html">
+<link rel="import" href="../bower_components/paper-menu/paper-menu.html">
+<link rel="import" href="../bower_components/paper-menu/paper-submenu.html">
+<link rel="import" href="../bower_components/paper-scroll-header-panel/paper-scroll-header-panel.html">
+<link rel="import" href="../bower_components/paper-styles/typography.html">
+<link rel="import" href="../bower_components/paper-toast/paper-toast.html">
+<link rel="import" href="../bower_components/paper-toolbar/paper-toolbar.html">
+<link rel="import" href="../bower_components/paper-checkbox/paper-checkbox.html">
+<link rel="import" href="../bower_components/paper-item/paper-item.html">
+<link rel="import" href="../bower_components/paper-button/paper-button.html">
+<link rel="import" href="../bower_components/paper-input/paper-input.html">
+<link rel="import" href="../bower_components/paper-material/paper-material.html">
+<link rel="import" href="../bower_components/paper-fab/paper-fab.html">
+<link rel="import" href="../bower_components/paper-dropdown-menu/paper-dropdown-menu.html">
+<link rel="import" href="../bower_components/paper-dropdown-menu/paper-dropdown-menu-light.html">
+<link rel="import" href="../bower_components/paper-listbox/paper-listbox.html">
+<link rel="import" href="../bower_components/paper-drawer-panel/paper-drawer-panel.html">
+<link rel="import" href="../bower_components/paper-tabs/paper-tabs.html">
+<link rel="import" href="../bower_components/paper-slider/paper-slider.html">
+<link rel="import" href="../bower_components/paper-header-panel/paper-header-panel.html">
+<link rel="import" href="../bower_components/iron-ajax/iron-ajax.html">
+<link rel="import" href="../bower_components/paper-item/paper-icon-item.html">
+<link rel="import" href="../bower_components/paper-item/paper-item-body.html">
+<link rel="import" href="../bower_components/paper-icon-button/paper-icon-button.html">
+<link rel="import" href="../bower_components/iron-list/iron-list.html">
+<link rel="import" href="../bower_components/paper-toolbar/paper-toolbar.html">
+<link rel="import" href="../bower_components/iron-flex-layout/iron-flex-layout.html">
+<link rel="import" href="../bower_components/iron-flex-layout/iron-flex-layout-classes.html">
+<link rel="import" href="../bower_components/iron-autogrow-textarea/iron-autogrow-textarea.html">
+<link rel="import" href="../bower_components/gold-email-input/gold-email-input.html">
+<link rel="import" href="../bower_components/iron-form/iron-form.html">
+<link rel="import" href="../bower_components/platinum-https-redirect/platinum-https-redirect.html">
+<link rel="import" href="../bower_components/app-storage/app-indexeddb-mirror/app-indexeddb-mirror.html">
+<link rel="import" href="../bower_components/app-storage/app-indexeddb-mirror/app-indexeddb-mirror-client.html">
+<link rel="import" href="../bower_components/app-storage/app-indexeddb-mirror/app-indexeddb-mirror-client.html">
+<link rel="import" href="../bower_components/app-route/app-location.html">
+<link rel="import" href="../bower_components/app-route/app-route.html">
+<link rel="import" href="../bower_components/iron-localstorage/iron-localstorage.html" />
+<link rel="import" href="../bower_components/app-storage/app-localstorage/app-localstorage-document.html">
+<link rel="import" href="../bower_components/app-storage/app-storage-behavior.html">
+<link rel="import" href="../bower_components/app-storage/app-network-status-behavior.html">
+<link rel="import" href="../bower_components/byutv-jsonp/byutv-jsonp.html" />
+<link rel="import" href="my-icons.html">
+'
+	   ),
+	   createlements: TagML!Tag(
+		 content<- c.eContents()->select(l | l.oclIsTypeOf(UML!Class))->collect(l | thisModule.ImportElements(l,createlements))
+	   ),
+	  
+	  
+	  
+
+	  dommodule: TagML!Tag(
+	    name<-'dom-module',
+		parent<-html
+	  ),
+	  iddom: TagML!Attribute(
+	    name<-'id',
+		value<-'my-app',
+		tag<-dommodule
+	  ),
+	  template: TagML!Tag(
+	    name<-'template',
+		parent<-dommodule
+	  ),
+	  style: TagML!Tag(
+	    name<-'style',
+		parent<-template
+	  ),
+	  stylecontent: TagML!Text(
+		content<-' :host {
+        --app-primary-color: #4285f4;
+        --app-secondary-color: black;
+        display: block;
+      	}
+      app-header {
+        color: #fff;
+        background-color: var(--app-primary-color);
+      }
+      app-header paper-icon-button {
+        --paper-icon-button-ink-color: white;
+      }
+      .drawer-list {
+        margin: 0 20px;
+      }
+      .drawer-list a {
+        display: block;
+        padding: 0 16px;
+        text-decoration: none;
+        color: var(--app-secondary-color);
+        line-height: 40px;
+      }
+      .drawer-list a.iron-selected {
+        color: black;
+        font-weight: bold;
+      }',
+		parent<-style
+	  ),
+	  applocation: TagML!Tag(
+	    name<-'app-location',
+		parent<-template
+	  ),
+	  routeapplocation: TagML!Attribute(
+	    name<-'route',
+		value<-'{{route}}',
+		tag<-applocation
+	  ),
+	  useapplocation: TagML!Attribute(
+	    name<-'use-hash-as-path',
+		tag<-applocation
+	  ),
+	  approute: TagML!Tag(
+	    name<-'app-route',
+		parent<-template
+	  ),
+	  routeapproute: TagML!Attribute(
+	    name<-'route',
+		value<-'{{route}}',
+		tag<-approute
+	  ),
+	  pattapproute: TagML!Attribute(
+	    name<-'pattern',
+		value<-'/:page',
+		tag<-approute
+	  ),
+	  dataapproute: TagML!Attribute(
+	    name<-'data',
+		value<-'{{routeData}}',
+		tag<-approute
+	  ),
+	  tailapproute: TagML!Attribute(
+	    name<-'tail',
+		value<-'{{subroute}}',
+		tag<-approute
+	  ),
+	  appsubroute: TagML!Tag(
+	    name<-'app-route',
+		parent<-template
+	  ),
+	  routeappsubroute: TagML!Attribute(
+	    name<-'route',
+		value<-'{{subroute}}',
+		tag<-appsubroute
+	  ),
+	  pattappsubroute: TagML!Attribute(
+	    name<-'pattern',
+		value<-'/:id',
+		tag<-appsubroute
+	  ),
+	  dataappsubroute: TagML!Attribute(
+	    name<-'data',
+		value<-'{{subrouteData}}',
+		tag<-appsubroute
+	  ),
+
+	  
+	  
+	  paperpanel: TagML!Tag(
+	    name<-'app-drawer-layout',
+		parent<-template
+	  ),
+	  idpaperpanel: TagML!Attribute(
+	    name<-'fullbleed',
+		tag<-paperpanel
+	  ),
+	  toolbar: TagML!Tag(
+	    name<-'app-drawer',
+		parent<-paperpanel
+	  ),
+	  spanmenu: TagML!Tag(
+	    name<-'app-toolbar',
+		parent<-toolbar
+	  ),
+	  classspanmenu: TagML!Attribute(
+	    name<-'class',
+		value<-'menu-name',
+		tag<-spanmenu
+	  ),
+	  textspanmenu: TagML!Text(
+		content<-'Menu',
+		parent<-spanmenu
+	  ),
+	  ironselector: TagML!Tag(
+	    name<-'iron-selector',
+		parent<-toolbar
+	  ),
+	  classironselector: TagML!Attribute(
+	    name<-'class',
+		value<-'drawer-list',
+		tag<-ironselector
+	  ),
+	  dataironselector: TagML!Attribute(
+	    name<-'attr-for-selected',
+		value<-'name',
+		tag<-ironselector
+	  ),
+	  routeironselector: TagML!Attribute(
+	    name<-'selected',
+		value<-'[[page]]',
+		tag<-ironselector
+	  ),
+	  roleironselector: TagML!Attribute(
+	    name<-'role',
+		value<-'navigation',
+		tag<-ironselector
+	  ),
+	  anchor: TagML!Tag(
+	    name<-'a',
+		parent<-ironselector
+	  ),
+	  route: TagML!Attribute(
+	    name<-'name',
+		value<-'home',
+		tag<-anchor
+	  ),
+	  href: TagML!Attribute(
+	    name<-'href',
+		value<-'/',
+		tag<-anchor
+	  ),
+	  ironicon: TagML!Tag(
+	    name<-'iron-icon',
+		parent<-anchor
+	  ),
+	  icon: TagML!Attribute(
+	    name<-'icon',
+		value<-'icons:home',
+		tag<-ironicon
+	  ),
+	  span1: TagML!Tag(
+	    name<-'span',
+		parent<-anchor
+	  ),
+	  textspan: TagML!Text(
+	    content<-'Home',
+		parent<-span1
+	  ),
+	  
+	  
+	  papersubmenu: TagML!Tag(
+	    name<-'paper-submenu',
+		parent<-ironselector
+	  ),
+	  paperitem1: TagML!Tag(
+	    name<-'paper-itemt',
+		parent<-papersubmenu
+	  ),
+	  classpaperitem1: TagML!Attribute(
+	    name<-'class',
+		value<-'menu-trigger',
+		tag<-paperitem1
+	
+	  ),
+	  ironicon2: TagML!Tag(
+	    name<-'iron-icon',
+		parent<-paperitem1
+	  ),
+	  iconironicon2: TagML!Attribute(
+	    name<-'icon',
+		value<-'icons:view-list',
+		tag<-ironicon2
+	
+	  ),  
+	  textpaperitem1: TagML!Text(
+	    content<-'Lists',
+		parent<-paperitem1
+	
+	  ),
+	  papermenucontent: TagML!Tag(
+	    name<-'paper-menu',
+		parent<-papersubmenu,
+		content<-c.eContents()->select(l | l.oclIsTypeOf(UML!Class))->collect(l | thisModule.MenuItem(l,papermenucontent))
+	  ),
+	  classpapermenucontent: TagML!Attribute(
+	    name<-'class',
+		value<-'menu-content',
+		tag<-papermenucontent
+	
+	  ),
+	  
+	  
+	  
+	  appheaderlayout: TagML!Tag(
+	  	name<-'app-header-layout',
+		parent<-paperpanel
+	  ),
+	  idpaperscrollheaderpanel: TagML!Attribute(
+	    name<-'has-scrolling-region',
+		tag<-appheaderlayout
+	  ),
+	  appheader: TagML!Tag(
+	  	name<-'app-header',
+		parent<-appheaderlayout
+	  ),
+	  conpaperscrollheaderpanel: TagML!Attribute(
+	    name<-'condenses',
+		tag<-appheader
+	  ),
+	  keeppaperscrollheaderpanel: TagML!Attribute(
+	    name<-'reveals',
+		tag<-appheader
+	  ),
+	  classpapertoolbarmain: TagML!Attribute(
+	  	name<-'effects',
+	    value<-'waterfall',
+		tag<-appheader
+	  ),
+	  apptoolbar: TagML!Tag(
+	  	name<-'app-toolbar',
+		parent<-appheader
+	  ),
+	   menu: TagML!Tag(
+	  	name<-'paper-icon-button',
+		parent<-apptoolbar
+	  ),
+	  iconmenu: TagML!Attribute(
+	    name<-'icon',
+		value<-'menu',
+		tag<-menu
+	  ), 
+	  drawer: TagML!Attribute(
+	    name<-'drawer-toggle',
+		tag<-menu
+	  ),
+	  divmaintitle: TagML!Tag(
+	    name<-'div',
+		parent<-apptoolbar
+	  ),
+	  maintitle: TagML!Attribute(
+	    name<-'main-title',
+		tag<-divmaintitle
+	  ),
+	  textmaintitle: TagML!Text(
+	    content<-c.name.substring(1,1).toUpper()+c.name.substring(2,c.name.size()),
+		parent<-divmaintitle
+	  ),
+
+	  ironpages: TagML!Tag(
+	    name<-'iron-pages',
+		parent<-appheaderlayout,
+		content<-c.eContents()->select(l | l.oclIsTypeOf(UML!Class))->collect(l | thisModule.Section(l,ironpages))
+	  ),
+	  attrironpages: TagML!Attribute(
+	    name<-'attr-for-selected',
+		value<-'name',
+		tag<-ironpages
+	  ),
+	  selectironpages: TagML!Attribute(
+	    name<-'selected',
+		value<-'[[routeData.page]]',
+		tag<-ironpages
+	  ),
+	  fallback: TagML!Attribute(
+	    name<-'fallback-selectio',
+		value<-'view404',
+		tag<-ironpages
+	  ),
+	  rol: TagML!Attribute(
+	    name<-'rol',
+		value<-'main',
+		tag<-ironpages
+	  ),
+	  scriptglobal: TagML!Tag(
+	  	name<-'script',
+		parent<-dommodule
+	  ),
+	  srcscriptglobal: TagML!Attribute(
+	   	name<-'src',
+		value<-'../scripts/app.js',
+		tag<-scriptglobal
+	  ),
+	  scriptapp: TagML!Tag(
+	    name<-'script',
+		parent<-dommodule
+	  ),
+	  srcscript: TagML!Text(
+		content<-'    Polymer({
+      is: "my-app",
+
+      properties: {
+        page: {
+          type: String,
+          reflectToAttribute: true,
+          observer: "_pageChanged"
+        }
+      },
+
+      observers: [
+        "_routePageChanged(routeData.page)"
+      ],
+
+      _routePageChanged: function(page) {
+        this.page = page || "home";
+      },
+
+
+      _showPage404: function() {
+        this.page = "view404";
+      }
+    });',
+		parent<-scriptapp
+	  )
+	  
+	  
+		 
+}
+
+lazy rule MenuItem {
+	from 
+	  c: UML!Class,
+	  submenu: TagML!Tag
+	to
+      anchor: TagML!Tag(
+	    name<-'a',
+		parent<-submenu
+	  ),
+	  route: TagML!Attribute(
+	    name<-'name',
+		value<-c.name.toLower(),
+		tag<-anchor
+	  ),
+	  href: TagML!Attribute(
+	    name<-'href',
+		value<-'#/'+c.name.toLower(),
+		tag<-anchor
+	  ),
+	  paperitem: TagML!Tag(
+	    name<-'paper-itemt',
+		parent<-anchor
+	  ),
+	  ironicon: TagML!Tag(
+	    name<-'iron-icon',
+		parent<-paperitem
+	  ),
+	  icon: TagML!Attribute(
+	    name<-'icon',
+		value<-'social:group',
+		tag<-ironicon
+	  ),
+	  span: TagML!Tag(
+	    name<-'span',
+		parent<-paperitem
+	  ),
+	  textspan: TagML!Text(
+	    content<-c.name,
+		parent<-span
+	  )
+}
+
+lazy rule Section {
+	from 
+	  c: UML!Class,
+	  ironpage: TagML!Tag
+	to
+	  item: TagML!Tag(
+	    name<-'element-'+c.name.toLower(),
+		parent<-ironpage
+	  ),
+	  name: TagML!Attribute(
+	    name<-'name',
+		value<-c.name.toLower(),
+		tag<-item
+	  ),
+	  item2: TagML!Tag(
+	    name<-'new-'+c.name.toLower(),
+		parent<-ironpage
+	  ),
+	  name2: TagML!Attribute(
+	    name<-'name',
+		value<-'new'+c.name.toLower(),
+		tag<-item2
+	  ),
+	  item3: TagML!Tag(
+	    name<-'menu-'+c.name.toLower(),
+		parent<-ironpage
+	  ),
+	  name3: TagML!Attribute(
+	    name<-'name',
+		value<-'view'+c.name.toLower(),
+		tag<-item3
+	  ),
+	  idelement: TagML!Attribute(
+	    name<-'idelement',
+		value<-'[[subrouteData.id]]',
+		tag<-item3
+	  )
+}
+
+lazy rule ElementsListMenu {
+	from 
+	  c: UML!Class,
+	  s: String,
+	  ironpage: TagML!Tag
+	to
+ 
+	  item3: TagML!Tag(
+	    name<-'element-'+c.name.toLower(),
+		parent<-ironpage
+	  ),
+	  name3: TagML!Attribute(
+	    name<-'name',
+		value<-'list'+c.name.toLower(),
+		tag<-item3
+	  ),
+	  idelement: TagML!Attribute(
+	    name<-'idelement',
+		value<-'{{idelement}}',
+		tag<-item3
+	  ),
+	  type: TagML!Attribute(
+	    name<-'type',
+		value<-s,
+		tag<-item3
+	  )
+}
+
+lazy rule ImportElements{
+	from 
+	  c: UML!Class,
+	  elements: TagML!Tag
+	to
+      link: TagML!Tag(
+	    name<-'link',
+		parent<-elements
+	  ),
+	  rellink: TagML!Attribute(
+	    name<-'rel',
+		value<-'import',
+		tag<-link
+	  ),
+	  hreflink: TagML!Attribute(
+	    name<-'href',
+		value<-'element-'+c.name.toLower()+'.html',
+		tag<-link
+	  ),link2: TagML!Tag(
+	    name<-'link',
+		parent<-elements
+	  ),
+	  rellink2: TagML!Attribute(
+	    name<-'rel',
+		value<-'import',
+		tag<-link2
+	  ),
+	  hreflin2k: TagML!Attribute(
+	    name<-'href',
+		value<-'new-'+c.name.toLower()+'.html',
+		tag<-link2
+	  )
+	  ,link3: TagML!Tag(
+	    name<-'link',
+		parent<-elements
+	  ),
+	  rellink3: TagML!Attribute(
+	    name<-'rel',
+		value<-'import',
+		tag<-link3
+	  ),
+	  hreflin3k: TagML!Attribute(
+	    name<-'href',
+		value<-'view-'+c.name.toLower()+'.html',
+		tag<-link3
+	  ),
+	  link4: TagML!Tag(
+	    name<-'link',
+		parent<-elements
+	  ),
+	  rellink4: TagML!Attribute(
+	    name<-'rel',
+		value<-'import',
+		tag<-link4
+	  ),
+	  hreflin4k: TagML!Attribute(
+	    name<-'href',
+		value<-'menu-'+c.name.toLower()+'.html',
+		tag<-link4
+	  )
+}
+
+
+lazy rule FormElement{
+	from 
+	  c: UML!Class,
+	  folder: TagML!Tag
+	to
+	 
+	  document1: TagML!Document(
+	  	name<-'new-'+c.name.toLower()+'.html',
+		parent<-folder
+	  ),
+	  html: TagML!Tag(
+	  	document<-document1
+	  ),
+	  importHead: TagML!Tag(
+	    name<-'link',
+		parent<-html
+	  ),
+	  href: TagML!Attribute(
+	    name<-'href',
+		value<-'../bower_components/polymer/polymer.html',
+		tag<-importHead
+	  ),
+	  rel: TagML!Attribute(
+	    name<-'rel',
+		value<-'import',
+		tag<-importHead
+	  ),
+	  importHead2: TagML!Tag(
+	    name<-'link',
+		parent<-html
+	  ),
+	  href2: TagML!Attribute(
+	    name<-'href',
+		value<-'shared-styles.html',
+		tag<-importHead2
+	  ),
+	  rel2: TagML!Attribute(
+	    name<-'rel',
+		value<-'import',
+		tag<-importHead2
+	  ),
+	  dom: TagML!Tag(
+	 	name<-'dom-module',
+		parent<-html
+	  ),
+	  iddom: TagML!Attribute(
+	  	name<-'id',
+		value<-'new-'+c.name.toLower(),
+		tag<-dom
+	  ),
+	 templateht: TagML!Tag(
+	    name<-'template',
+		parent<-dom
+	  ),
+	  style: TagML!Tag(
+	    name<-'style',
+		parent<-templateht
+	  ),
+	  styleis: TagML!Attribute(
+	    name<-'include',
+		value<-'shared-styles',
+		tag<-style
+	  ),
+	  contentstylet: TagML!Text(
+	  	content<-'  
+    /* Reglas CSS para tu elemento */
+	 paper-button.custom:hover {
+        background-color: var(--paper-indigo-100);
+    }
+
+    paper-button.indigo {
+        background-color: var(--paper-indigo-500);
+        color: white;
+        --paper-button-raised-keyboard-focus: {
+            background-color: var(--paper-pink-a200) !important;
+            color: white !important;
+        };
+    }',
+      parent<-style
+	  ),
+	  divcard: TagML!Tag(
+	    name<-'div',
+		parent<-templateht
+	  ),
+	  classdivcard: TagML!Attribute(
+	    name<-'class',
+		value<-'card',
+		tag<-divcard
+	  ),
+      form: TagML!Tag(
+	    name<-'form',
+		parent<-divcard,
+		content<-thisModule.getProperties(c)->collect(a | thisModule.FormElementItem(a,form)),
+		attribute <- thisModule.Form(c.name.toLower(),form) 
+	  ),
+	  type: TagML!Tag(
+	  	 name<-'paper-input',
+		 parent<-form
+	  ),
+	  nametype: TagML!Attribute(
+	  	 name<-'name',
+		 value<-'type',
+		 tag<-type
+	  ),
+	  typetype: TagML!Attribute(
+	  	name<-'type',
+		value<-'hidden',
+		tag<-type
+	  ),
+	  styletype: TagML!Attribute(
+	  	name<-'style',
+		value<-'display: none;',
+		tag<-type
+	  ),
+	  valuetype: TagML!Attribute(
+	  	name<-'value',
+		value<-'{{type}}',
+		tag<-type
+	  ),
+	  paperbutton: TagML!Tag(
+	  	content<-thisModule.PaperButtonForm(c.name.toLower(),'Send',paperbutton),
+	  	parent<-form
+	  ),
+	  divoutput: TagML!Tag(
+	    name<-'div',
+        parent<-form
+	  ),
+	  classoutput: TagML!Attribute(
+	    name<-'class',
+		value<-'output',
+        tag<-divoutput
+	  ),
+	  br1: TagML!Tag(
+	    name<-'br',
+        parent<-form
+	  ),
+	  divoutputserve: TagML!Tag(
+	    name<-'div',
+        parent<-form
+	  ),
+	  classoutputserve: TagML!Attribute(
+	    name<-'class',
+		value<-'outputServer',
+        tag<-divoutputserve
+	  ),
+	  br2: TagML!Tag(
+	    name<-'br',
+        parent<-form
+	  ),
+	  script: TagML!Tag(
+	    name<-'script',
+		parent<-dom
+	  ),
+	  scripttext:TagML!Text(
+	    parent<-script,
+		content<-'  Polymer({
+    is: "new-'+c.name.toLower()+'",
+         properties: {
+		    type:{
+               type: String,
+               value: "add'+c.name.substring(1,1).toUpper()+c.name.substring(2,c.name.size())+'"
+            }
+        },
+        listeners: {
+            "iron-form-response": "formResponse",
+            "iron-form-submit": "formSubmit",
+            "iron-form-error": "formError"
+        },
+        formSubmit: function (event) {
+          //  this.querySelector(".output").innerHTML = JSON.stringify(event.detail);
+        },
+        formResponse: function (event, response) {
+            console.log(event.detail);
+            if (200 === response.xhr.status) {
+                var data = response.xhr;
+                console.log(response);
+                if(!data.response.success){
+                    this.querySelector(".output").innerHTML = "Error with the send";
+                }
+                else{
+                	this.querySelector(".output").innerHTML = "Successful!!";
+                	document.location.href = "#/'+c.name.toLower()+'";
+                }
+            }
+        },
+        formError: function (event) {
+            this.querySelector(".outputServer").innerHTML = event.detail.error;
+        }
+  });'
+	  )
+	  
+	  
+		
+}
+
+lazy rule FormElementItem{
+	from 
+	  c: UML!Property,
+	  form: TagML!Tag
+	to
+	
+	input: TagML!Tag(
+	  name<-'paper-input',
+	  parent<-form
+	),
+	nameinput: TagML!Attribute(
+	  name<-'name',
+	  value<-c.name.toLower(),
+	  tag<-input
+	),
+	namelabel: TagML!Attribute(
+	  name<-'label',
+	  value<-c.name.substring(1,1).toUpper()+c.name.substring(2,c.name.size()),
+	  tag<-input
+	),
+	required: TagML!Attribute(
+	  tag<-input
+	),
+	type: TagML!Attribute(
+	  name<-'type',
+	  tag<-input
+	),
+	step: TagML!Attribute(
+	  tag<-input
+	),
+	size: TagML!Attribute(
+	  tag<-input
+	),
+	placeholder: TagML!Attribute(
+	  tag<-input
+	)
+	
+  do{
+	  if(c.upper>0 and not c.class.getModel().eContents()->select(t | t.oclIsTypeOf(UML!Class))->exists(l| c.type=l) ){
+		  	if (c.type.toString().contains('EString')){
+			type.value<-'text';
+			size.value<-c.upper.toString();
+			size.name<-'maxlength';
+		  	}
+		  	if (c.type.toString().contains('#Integer') or c.type.toString().contains('EInt')){
+			type.value<-'number';
+		  	}
+			if (c.type.toString().contains('Date')){
+			type.value<-'date';
+			}
+			if (c.type.toString().contains('Real')){
+			type.value<-'number';
+			}
+			if (c.type.toString().contains('#BigDecimal')){
+			type.value<-'number';
+			step.value<-'any';
+			step.name<-'step';
+			}
+			if (c.type.toString().contains('Double')){
+			type.value<-'number';
+			step.value<-'any';
+			step.name<-'step';
+			}
+			if (c.type.toString().contains('Float')){
+			type.value<-'number';
+			step.value<-'any';
+			step.name<-'step';
+			}
+			if (c.type.toString().contains('Char')){
+			type.value<-'text';
+			size.value<-'1';
+			size.name<-'maxlength';
+			}
+			if (c.type.toString().contains('Long')){
+			input.name<-'iron-autogrow-textarea';
+			type.name<-'';
+			step.value<-'height: 171px; width: 899px;';
+			step.name<-'style';
+			placeholder.name<-'placeholder';
+			placeholder.value<-c.name.substring(1,1).toUpper()+c.name.substring(2,c.name.size());
+			}
+			if (c.type.toString().contains('BigInteger')){
+			type.value<-'number';
+			}
+			if (c.type.toString().contains('Boolean')){
+			input.name<-'paper-checkbox';
+			}
+			if (c.type.toString().contains('Array')){
+			type.value<-'text';
+			}
+			if(c.lower>0){
+			 required.name<-'required';
+			}
+	  }
+	  else{
+	   input.name<-'null';
+	    if (c.upperBound()=1 and c.lowerBound()=1 and not c.type.name.oclIsUndefined()){
+	    	thisModule.TitleForm(c.type,form);
+	    	form.content<-thisModule.getProperties(c.type)->collect(a | thisModule.FormElementItem(a,form));
+	    }
+	    if (c.upperBound()<0 and c.opposite.upperBound()=1 and not c.type.name.oclIsUndefined() and c.type.name=c.class.name){
+		 input.name<-'paper-input';
+		 type.value<-'hidden';
+		 step.name<-'style';
+		 step.value<-'display: none;';
+		 size.name<-'value';
+		 size.value<-'null';
+			
+	    }
+	  }
+ 
+    
+   } 
+	  
+		
+}
+
+lazy rule ironAjax{
+	from 
+	  templateht: TagML!Tag
+	to
+
+ironajax: TagML!Tag(
+	  	name<-'iron-ajax',
+		parent<-templateht
+	  ),
+	  autoajax: TagML!Attribute(
+	    name<-'auto',
+		tag<-ironajax
+	  ),
+	  headerajax: TagML!Attribute(
+	    name<-'headers',
+		value<-'{"Content-Type": "application/json;charset=utf-8"}',
+		tag<-ironajax
+	  ),
+	  urlajax: TagML!Attribute(
+	    name<-'url',
+		value<-thisModule.getUrlApi(),
+		tag<-ironajax
+	  ),
+	  paramsajax: TagML!Attribute(
+	    name<-'params',
+		value<-'{{ajaxParams}}',
+		tag<-ironajax
+	  ),
+	  handleajax: TagML!Attribute(
+	    name<-'handle-as',
+		value<-'json',
+		tag<-ironajax
+	  ),
+	  durationajax: TagML!Attribute(
+	    name<-'debounce-duration',
+		value<-'300',
+		tag<-ironajax
+	  ),
+	  methodajax: TagML!Attribute(
+	    name<-'method',
+		value<-'POST',
+		tag<-ironajax
+	  ),
+	  lastajax: TagML!Attribute(
+	    name<-'last-response',
+		value<-'{{response}}',
+		tag<-ironajax
+	  )
+	  
+}	  
+
+lazy rule FormElementItemView{
+	from 
+	  c: UML!Property,
+	  form: TagML!Tag
+	to
+	
+	input: TagML!Tag(
+	  name<-'paper-input',
+	  parent<-form
+	),
+	nameinput: TagML!Attribute(
+	  name<-'name',
+	  value<-c.name.toLower(),
+	  tag<-input
+	),
+	namelabel: TagML!Attribute(
+	  name<-'label',
+	  value<-c.name.substring(1,1).toUpper()+c.name.substring(2,c.name.size()),
+	  tag<-input
+	),
+	required: TagML!Attribute(
+	  tag<-input
+	),
+	type: TagML!Attribute(
+	  name<-'type',
+	  tag<-input
+	),
+	step: TagML!Attribute(
+	  tag<-input
+	),
+	size: TagML!Attribute(
+	  tag<-input
+	),
+	placeholder: TagML!Attribute(
+	  tag<-input
+	),
+	disabled: TagML!Attribute(
+	  tag<-input
+	),
+	value: TagML!Attribute(
+	  name<-'value',
+	  value<-'{{response.'+c.name.substring(1,1).toUpper()+c.name.substring(2,c.name.size())+'}}',
+	  tag<-input
+	)
+	
+  do{
+	  if(c.upper>0 and not c.class.getModel().eContents()->select(t | t.oclIsTypeOf(UML!Class))->exists(l| c.type=l) ){
+		  	if (c.type.toString().contains('EString')){
+			type.value<-'text';
+			size.value<-c.upper.toString();
+			size.name<-'maxlength';
+		  	}
+		  	if (c.type.toString().contains('#Integer') or c.type.toString().contains('EInt')){
+			type.value<-'number';
+		  	}
+			if (c.type.toString().contains('Date')){
+			type.value<-'date';
+			}
+			if (c.type.toString().contains('Real')){
+			type.value<-'number';
+			}
+			if (c.type.toString().contains('#BigDecimal')){
+			type.value<-'number';
+			step.value<-'any';
+			step.name<-'step';
+			}
+			if (c.type.toString().contains('Double')){
+			type.value<-'number';
+			step.value<-'any';
+			step.name<-'step';
+			}
+			if (c.type.toString().contains('Float')){
+			type.value<-'number';
+			step.value<-'any';
+			step.name<-'step';
+			}
+			if (c.type.toString().contains('Char')){
+			type.value<-'text';
+			size.value<-'1';
+			size.name<-'maxlength';
+			}
+			if (c.type.toString().contains('Long')){
+			input.name<-'iron-autogrow-textarea';
+			type.name<-'';
+			step.value<-'height: 171px; width: 899px;';
+			step.name<-'style';
+			placeholder.name<-'placeholder';
+			placeholder.value<-c.name.substring(1,1).toUpper()+c.name.substring(2,c.name.size());
+			}
+			if (c.type.toString().contains('BigInteger')){
+			type.value<-'number';
+			}
+			if (c.type.toString().contains('Boolean')){
+			input.name<-'paper-checkbox';
+			}
+			if (c.type.toString().contains('Array')){
+			type.value<-'text';
+			}
+			if(c.lower>0){
+			 required.name<-'required';
+			}
+	  }
+	  else{
+	   input.name<-'null';
+	    if (c.upperBound()=1 and c.lowerBound()=1 and not c.type.name.oclIsUndefined()){
+	    	--thisModule.TitleForm(c.type,form);
+	    	form.content<-thisModule.ButtonForeignInformation(c.type,form);
+	    }
+	    if (c.upperBound()<0 and c.opposite.upperBound()=1 and not c.type.name.oclIsUndefined()){
+	    	form.content<-thisModule.ButtonForeignInformation(c.association.memberEnd->at(2),form);
+	    }
+	    if (c.upperBound()<0 and c.opposite.upperBound()=1 and not c.type.name.oclIsUndefined() and c.type.name=c.class.name){
+		 input.name<-'paper-input';
+		 type.value<-'hidden';
+		 step.name<-'style';
+		 step.value<-'display: none;';
+		 size.name<-'value';
+		 size.value<-'null';
+			
+	    }
+	  }
+ 
+    
+   } 
+	  
+		
+}
+
+lazy rule TitleForm{
+	from 
+	  c: UML!Class,
+	  form: TagML!Tag
+	to
+	
+	h1: TagML!Tag(
+	  name<-'h1',
+	  parent<-form
+	),
+	nameinput: TagML!Text(
+	  content<-c.name.substring(1,1).toUpper()+c.name.substring(2,c.name.size()),
+	  parent<-h1
+	)
+
+	  
+		
+}
+
+
+lazy rule ButtonForeignInformation{
+	from 
+	  c: UML!Class,
+	  template: TagML!Tag
+	to
+	
+      div1: TagML!Tag(
+	    name<-'div',
+		parent<-template
+	  ),
+	  acreate: TagML!Tag(
+	  	name<-'a',
+	    parent<-div1
+	  ),
+	  pappercreate:TagML!Tag(
+	  	name<-'paper-button',
+		parent<-acreate
+	  ),
+	  stylediv1: TagML!Attribute(
+	    name<-'style',
+		value<-'text-align: center;',
+		tag<-div1
+	  ),
+	  hrefacreate: TagML!Attribute(
+	    name<-'href',
+		value<-'#/view'+c.name.toLower()+'/'+'{{response.Fk'+c.name.toLower()+'}}',
+		tag<-acreate
+	  ),
+	  textpappercreate: TagML!Text(
+	    content<-'View '+c.name.substring(1,1).toUpper()+c.name.substring(2,c.name.size()),
+		parent<-pappercreate
+	  ),
+	  rapappercreate: TagML!Attribute(
+	    name<-'raised',
+		tag<-pappercreate
+	  ),
+	  classpappercreate: TagML!Attribute(
+	    name<-'class',
+		value<-'button-send',
+		tag<-pappercreate
+	  )
+
+	  
+		
+}
+
+lazy rule PaperTabMany{
+	from 
+	  c: UML!Class,
+	  s: UML!Class,
+	  template: TagML!Tag
+	to
+	
+
+	  pappercreate:TagML!Tag(
+	  	name<-'paper-tab'
+	  ),
+	  acreate: TagML!Tag(
+	  	name<-'a',
+	    parent<-pappercreate
+	  ),
+	  hrefacreate: TagML!Attribute(
+	    name<-'href',
+		value<-'#/view'+s.name.toLower()+'/{{idelement}}/'+'list'+c.name.toLower(),
+		tag<-acreate
+	  ),
+	  textpappercreate: TagML!Text(
+	    content<-'List '+c.name.substring(1,1).toUpper()+c.name.substring(2,c.name.size()),
+		parent<-acreate
+	  ),
+	  classpappercreate: TagML!Attribute(
+	    name<-'link',
+		tag<-pappercreate
+	  )
+
+	  
+		
+}
+
+lazy rule PaperButtonForm{
+	from 
+	  nameform: String,
+	  namebutton: String,
+	  form: TagML!Tag
+	to
+	
+	  paperbutton:TagML!Tag(
+	  	name<-'paper-button',
+		parent<-form
+	  ),
+	  raisedpaperbutton: TagML!Attribute(
+	    name<-'raised',
+		tag<-paperbutton
+	  ),
+	  classpaperbutton: TagML!Attribute(
+	    name<-'class',
+		value<-'custom indigo',
+		tag<-paperbutton
+	  ),
+	  clickpaperbutton: TagML!Attribute(
+	    name<-'onclick',
+		value<-'document.getElementById("'+nameform+'").submit()',
+        tag<-paperbutton
+	  ),
+	  ironicon: TagML!Tag(
+	    name<-'iron-icon',
+        parent<-paperbutton
+	  ),
+	  icon: TagML!Attribute(
+	    name<-'icon',
+		value<-'icon:send',
+        tag<-ironicon
+	  ),
+	  textsend: TagML!Text(
+		content<-namebutton,
+        parent<-paperbutton
+	  )
+}
+
+lazy rule BlockElementSelect{
+ 	from
+	  many: String,
+      c: UML!Class,
+	  s: UML!Class,
+	  typename: String,
+	  template: TagML!Tag
+	to
+	
+	  div1:TagML!Tag(
+	  	name<-'div',
+		parent<-template,
+		content<-thisModule.AddElementSelect(c,s,typename,div1),
+		content<-thisModule.DeleteElementSelect(many,c,s,typename,div1)
+	  ),
+	  classdiv1: TagML!Attribute(
+	    name<-'class',
+		value<-'card',
+		tag<-div1
+	  )
+}
+
+lazy rule AddElementSelect{
+	from
+	  c: UML!Class,
+	  s: UML!Class,
+	  typename: String,
+	  div1: TagML!Tag
+	to
+	
+     
+	  ironajax: TagML!Tag(
+	  	name<-'iron-ajax',
+		parent<-div1
+	  ),
+	  autoajax: TagML!Attribute(
+	    name<-'auto',
+		tag<-ironajax
+	  ),
+	  headerajax: TagML!Attribute(
+	    name<-'headers',
+		value<-'{"Content-Type": "application/json;charset=utf-8"}',
+		tag<-ironajax
+	  ),
+	  urlajax: TagML!Attribute(
+	    name<-'url',
+		value<-thisModule.getUrlApi(),
+		tag<-ironajax
+	  ),
+	  paramsajax: TagML!Attribute(
+	    name<-'params',
+		value<-'{"type":"getAll'+thisModule.getUpperFirst(c.name)+'"}',
+		tag<-ironajax
+	  ),
+	  handleajax: TagML!Attribute(
+	    name<-'handle-as',
+		value<-'json',
+		tag<-ironajax
+	  ),
+	  durationajax: TagML!Attribute(
+	    name<-'debounce-duration',
+		value<-'300',
+		tag<-ironajax
+	  ),
+	  methodajax: TagML!Attribute(
+	    name<-'method',
+		value<-'POST',
+		tag<-ironajax
+	  ),
+	  lastajax: TagML!Attribute(
+	    name<-'last-response',
+		value<-'{{'+c.name.toLower()+'2}}',
+		tag<-ironajax
+	  ),
+	  h1:TagML!Tag(
+	  	name<-'h1',
+		parent<-div1
+	  ),
+	  texth1: TagML!Text(
+	    content<-thisModule.getUpperFirst(c.name),
+		parent<-h1
+	  ),
+	  form: TagML!Tag(
+	    name<-'form',
+		attribute <- thisModule.Form(s.name.toLower()+c.name.toLower()+'2',form), 
+		parent<-div1
+	  ),
+	   dropdownmenu: TagML!Tag(
+	  	 name<-'paper-dropdown-menu',
+		 parent<-form
+	  ),
+	  labeldropdownmenu: TagML!Attribute(
+	  	 name<-'label',
+		 value<-'Add '+thisModule.getUpperFirst(c.name),
+		 tag<-dropdownmenu
+	  ),
+	  paperlist: TagML!Tag(
+	  	 name<-'paper-listbox',
+		 parent<-dropdownmenu
+	  ),
+	  classpaperlist: TagML!Attribute(
+	  	 name<-'class',
+		 value<-'dropdown-content',
+		 tag<-paperlist
+	  ),
+	  attrpaperlist: TagML!Attribute(
+	  	 name<-'attr-for-selected',
+		 value<-'value',
+		 tag<-paperlist
+	  ),
+	  selectedpaperlist: TagML!Attribute(
+	  	 name<-'selected',
+		 value<-'{{'+c.name.toLower()+'date}}',
+		 tag<-paperlist
+	  ),
+	  templaterepeat: TagML!Tag(
+	  	 name<-'template',
+		 parent<-paperlist
+	  ),
+	  istemplaterepeat: TagML!Attribute(
+	  	 name<-'is',
+		 value<-'dom-repeat',
+		 tag<-templaterepeat
+	  ),
+	  itemstemplaterepeat: TagML!Attribute(
+	  	 name<-'items',
+		 value<-'{{'+c.name.toLower()+'2}}',
+		 tag<-templaterepeat
+	  ),
+	  paperitem: TagML!Tag(
+	  	 name<-'paper-item',
+		 parent<-templaterepeat
+	  ),
+	  valuetemplaterepeat: TagML!Attribute(
+	  	 name<-'value',
+		 value<-'{{item.'+thisModule.getUpperFirst(thisModule.getPrimaryKey2(c))+'}}',
+		 tag<-paperitem
+	  ),
+	  textpaperitem: TagML!Text(
+		 content<-'{{item.'+thisModule.getUpperFirst(thisModule.getPrimaryKey2(c))+'}}',
+		 parent<-paperitem
+	  ),
+	  
+	  type: TagML!Tag(
+	  	 name<-'paper-input',
+		 parent<-form
+	  ),
+	  nametype: TagML!Attribute(
+	  	 name<-'name',
+		 value<-'type',
+		 tag<-type
+	  ),
+	  typetype: TagML!Attribute(
+	  	name<-'type',
+		value<-'hidden',
+		tag<-type
+	  ),
+	  styletype: TagML!Attribute(
+	  	name<-'style',
+		value<-'display: none;',
+		tag<-type
+	  ),
+	  valuetype: TagML!Attribute(
+	  	name<-'value',
+		value<-'add'+typename,
+		tag<-type
+	  ),
+	  iddata: TagML!Tag(
+	  	 name<-'paper-input',
+		 parent<-form
+	  ),
+	  nameiddata: TagML!Attribute(
+	  	 name<-'name',
+		 value<-thisModule.getPrimaryKey(c),
+		 tag<-iddata
+	  ),
+	  typeiddata: TagML!Attribute(
+	  	name<-'type',
+		value<-'hidden',
+		tag<-iddata
+	  ),
+	  styleiddata: TagML!Attribute(
+	  	name<-'style',
+		value<-'display: none;',
+		tag<-iddata
+	  ),
+	  valueiddata: TagML!Attribute(
+	  	name<-'value',
+		value<-'{{'+c.name.toLower()+'date}}',
+		tag<-iddata
+	  ),
+	  idelement: TagML!Tag(
+	  	 name<-'paper-input',
+		 parent<-form
+	  ),
+	  nameidelement: TagML!Attribute(
+	  	 name<-'name',
+		 value<-'idelement',
+		 tag<-idelement
+	  ),
+	  typeidelement: TagML!Attribute(
+	  	name<-'type',
+		value<-'hidden',
+		tag<-idelement
+	  ),
+	  styleidelement: TagML!Attribute(
+	  	name<-'style',
+		value<-'display: none;',
+		tag<-idelement
+	  ),
+	  valueidelement: TagML!Attribute(
+	  	name<-'value',
+		value<-'{{idelement}}',
+		tag<-idelement
+	  ),
+	  paperbutton: TagML!Tag(
+	  	content<-thisModule.PaperButtonForm(s.name.toLower()+c.name.toLower()+'2','Add',paperbutton),
+	  	parent<-form
+	  ),
+	  br1: TagML!Tag(
+	    name<-'br',
+        parent<-form
+	  )
+
+	  
+		
+}
+
+
+
+lazy rule DeleteElementSelect{
+	from 
+	  many: String,
+	  c: UML!Class,
+	  s: UML!Class,
+	  typename: String,
+	  temp: TagML!Tag
+	to
+	
+      div1: TagML!Tag(
+      	name<-many,
+		parent<-temp
+      ),
+	  ironajax: TagML!Tag(
+	  	name<-'iron-ajax',
+		parent<-div1
+	  ),
+	  autoajax: TagML!Attribute(
+	    name<-'auto',
+		tag<-ironajax
+	  ),
+	  headerajax: TagML!Attribute(
+	    name<-'headers',
+		value<-'{"Content-Type": "application/json;charset=utf-8"}',
+		tag<-ironajax
+	  ),
+	  urlajax: TagML!Attribute(
+	    name<-'url',
+		value<-thisModule.getUrlApi(),
+		tag<-ironajax
+	  ),
+	  paramsajax: TagML!Attribute(
+	    name<-'params',
+		value<-'{{_getParams("get'+typename+'",idelement)}}',
+		tag<-ironajax
+	  ),
+	  handleajax: TagML!Attribute(
+	    name<-'handle-as',
+		value<-'json',
+		tag<-ironajax
+	  ),
+	  durationajax: TagML!Attribute(
+	    name<-'debounce-duration',
+		value<-'300',
+		tag<-ironajax
+	  ),
+	  methodajax: TagML!Attribute(
+	    name<-'method',
+		value<-'POST',
+		tag<-ironajax
+	  ),
+	  lastajax: TagML!Attribute(
+	    name<-'last-response',
+		value<-'{{own'+c.name.toLower()+'2}}',
+		tag<-ironajax
+	  ),
+	  form: TagML!Tag(
+	    name<-'form',
+		attribute <- thisModule.Form('own'+s.name.toLower()+c.name.toLower()+'2',form), 
+		parent<-div1
+	  ),
+	   dropdownmenu: TagML!Tag(
+	  	 name<-'paper-dropdown-menu',
+		 parent<-form
+	  ),
+	  labeldropdownmenu: TagML!Attribute(
+	  	 name<-'label',
+		 value<-'Delete '+thisModule.getUpperFirst(c.name),
+		 tag<-dropdownmenu
+	  ),
+	  paperlist: TagML!Tag(
+	  	 name<-'paper-listbox',
+		 parent<-dropdownmenu
+	  ),
+	  classpaperlist: TagML!Attribute(
+	  	 name<-'class',
+		 value<-'dropdown-content',
+		 tag<-paperlist
+	  ),
+	  attrpaperlist: TagML!Attribute(
+	  	 name<-'attr-for-selected',
+		 value<-'value',
+		 tag<-paperlist
+	  ),
+	  selectedpaperlist: TagML!Attribute(
+	  	 name<-'selected',
+		 value<-'{{own'+c.name.toLower()+'date}}',
+		 tag<-paperlist
+	  ),
+	  templaterepeat: TagML!Tag(
+	  	 name<-'template',
+		 parent<-paperlist
+	  ),
+	  istemplaterepeat: TagML!Attribute(
+	  	 name<-'is',
+		 value<-'dom-repeat',
+		 tag<-templaterepeat
+	  ),
+	  itemstemplaterepeat: TagML!Attribute(
+	  	 name<-'items',
+		 value<-'{{own'+c.name.toLower()+'2}}',
+		 tag<-templaterepeat
+	  ),
+	  paperitem: TagML!Tag(
+	  	 name<-'paper-item',
+		 parent<-templaterepeat
+	  ),
+	  valuetemplaterepeat: TagML!Attribute(
+	  	 name<-'value',
+		 value<-'{{item.'+thisModule.getUpperFirst(thisModule.getPrimaryKey2(c))+'}}',
+		 tag<-paperitem
+	  ),
+	  textpaperitem: TagML!Text(
+		 content<-'{{item.'+thisModule.getUpperFirst(thisModule.getPrimaryKey2(c))+'}}',
+		 parent<-paperitem
+	  ),
+	  
+	  type: TagML!Tag(
+	  	 name<-'paper-input',
+		 parent<-form
+	  ),
+	  nametype: TagML!Attribute(
+	  	 name<-'name',
+		 value<-'type',
+		 tag<-type
+	  ),
+	  typetype: TagML!Attribute(
+	  	name<-'type',
+		value<-'hidden',
+		tag<-type
+	  ),
+	  styletype: TagML!Attribute(
+	  	name<-'style',
+		value<-'display: none;',
+		tag<-type
+	  ),
+	  valuetype: TagML!Attribute(
+	  	name<-'value',
+		value<-'delete'+typename,
+		tag<-type
+	  ),
+	  iddata: TagML!Tag(
+	  	 name<-'paper-input',
+		 parent<-form
+	  ),
+	  nameiddata: TagML!Attribute(
+	  	 name<-'name',
+		 value<-thisModule.getPrimaryKey(c),
+		 tag<-iddata
+	  ),
+	  typeiddata: TagML!Attribute(
+	  	name<-'type',
+		value<-'hidden',
+		tag<-iddata
+	  ),
+	  styleiddata: TagML!Attribute(
+	  	name<-'style',
+		value<-'display: none;',
+		tag<-iddata
+	  ),
+	  valueiddata: TagML!Attribute(
+	  	name<-'value',
+		value<-'{{own'+c.name.toLower()+'date}}',
+		tag<-iddata
+	  ),
+	  idelement: TagML!Tag(
+	  	 name<-'paper-input',
+		 parent<-form
+	  ),
+	  nameidelement: TagML!Attribute(
+	  	 name<-'name',
+		 value<-'idelement',
+		 tag<-idelement
+	  ),
+	  typeidelement: TagML!Attribute(
+	  	name<-'type',
+		value<-'hidden',
+		tag<-idelement
+	  ),
+	  styleidelement: TagML!Attribute(
+	  	name<-'style',
+		value<-'display: none;',
+		tag<-idelement
+	  ),
+	  valueidelement: TagML!Attribute(
+	  	name<-'value',
+		value<-'{{idelement}}',
+		tag<-idelement
+	  ),
+	  paperbutton: TagML!Tag(
+	  	content<-thisModule.PaperButtonForm('own'+s.name.toLower()+c.name.toLower()+'2','Delete',paperbutton),
+	  	parent<-form
+	  ),
+	  br1: TagML!Tag(
+	    name<-'br',
+        parent<-form
+	  )
+
+	  
+		
+}
+
+
+
+lazy rule Form{
+	from 
+	  c: String,
+	  form: TagML!Tag
+	to
+	
+	  isform: TagML!Attribute(
+	    name<-'is',
+		value<-'iron-form',
+		tag<-form
+	  ),
+	  methodform: TagML!Attribute(
+	    name<-'method',
+		value<-'post',
+		tag<-form
+	  ),
+	  actionform: TagML!Attribute(
+	    name<-'action',
+		value<-thisModule.getUrlApi(),
+		tag<-form
+	  ),
+	  idform: TagML!Attribute(
+	    name<-'id',
+		value<-c,
+		tag<-form
+	  )
+
+	  
+		
+}
+
+
+lazy rule MenuElement{
+	from 
+	  c: UML!Class,
+	  folder: TagML!Tag
+	to
+	
+  document1: TagML!Document(
+	  	name<-'menu-'+c.name.toLower()+'.html',
+		parent<-folder
+	  ),
+	  html: TagML!Tag(
+	  	document<-document1
+	  ),
+	  importHead: TagML!Tag(
+	    name<-'link',
+		parent<-html
+	  ),
+	  href: TagML!Attribute(
+	    name<-'href',
+		value<-'../bower_components/polymer/polymer.html',
+		tag<-importHead
+	  ),
+	  rel: TagML!Attribute(
+	    name<-'rel',
+		value<-'import',
+		tag<-importHead
+	  ),
+	  importHead2: TagML!Tag(
+	    name<-'link',
+		parent<-html
+	  ),
+	  href2: TagML!Attribute(
+	    name<-'href',
+		value<-'shared-styles.html',
+		tag<-importHead2
+	  ),
+	  rel2: TagML!Attribute(
+	    name<-'rel',
+		value<-'import',
+		tag<-importHead2
+	  ),
+	  dom: TagML!Tag(
+	 	name<-'dom-module',
+		parent<-html
+	  ),
+	  iddom: TagML!Attribute(
+	  	name<-'id',
+		value<-'menu-'+c.name.toLower(),
+		tag<-dom
+	  ),
+	 templateht: TagML!Tag(
+	    name<-'template',
+		parent<-dom
+	  ),
+	  style: TagML!Tag(
+	    name<-'style',
+		parent<-templateht
+	  ),
+	  styleis: TagML!Attribute(
+	    name<-'include',
+		value<-'shared-styles',
+		tag<-style
+	  ),
+	  contentstylet: TagML!Text(
+	  	content<-'  
+    /* Reglas CSS para tu elemento */
+	 paper-button.custom:hover {
+        background-color: var(--paper-indigo-100);
+    }
+	  paper-tab[link] a {
+	    @apply(--layout-horizontal);
+	    @apply(--layout-center-center);
+	    color: #fff;
+	    background: #5BCCAA;
+	    text-decoration: none;
+	  } 	
+
+    paper-button.indigo {
+        background-color: var(--paper-indigo-500);
+        color: white;
+        --paper-button-raised-keyboard-focus: {
+            background-color: var(--paper-pink-a200) !important;
+            color: white !important;
+        };
+    }',
+      parent<-style
+	  ),
+	  
+	  
+	  applocation: TagML!Tag(
+	    name<-'app-location',
+		parent<-templateht
+	  ),
+	  routeapplocation: TagML!Attribute(
+	    name<-'route',
+		value<-'{{route}}',
+		tag<-applocation
+	  ),
+	  useapplocation: TagML!Attribute(
+	    name<-'use-hash-as-path',
+		tag<-applocation
+	  ),
+	  approute: TagML!Tag(
+	    name<-'app-route',
+		parent<-templateht
+	  ),
+	  routeapproute: TagML!Attribute(
+	    name<-'route',
+		value<-'{{route}}',
+		tag<-approute
+	  ),
+	  pattapproute: TagML!Attribute(
+	    name<-'pattern',
+		value<-'{{computeURL}}',
+		tag<-approute
+	  ),
+	  dataapproute: TagML!Attribute(
+	    name<-'data',
+		value<-'{{routeData}}',
+		tag<-approute
+	  ),
+	  tailapproute: TagML!Attribute(
+	    name<-'tail',
+		value<-'{{subroute}}',
+		tag<-approute
+	  ),
+	  
+	  
+	  papertab:TagML!Tag(
+	  	name<-'paper-tabs',
+	  	parent<-templateht
+	  ),
+	  selecpapertab: TagML!Attribute(
+	    name<-'selected',
+		value<-'0',
+		tag<-papertab
+	  ),
+	  pappercreate:TagML!Tag(
+	  	name<-'paper-tab',
+		parent<-papertab
+	  ),
+	  acreate: TagML!Tag(
+	  	name<-'a',
+	    parent<-pappercreate
+	  ),
+	  hrefacreate: TagML!Attribute(
+	    name<-'href',
+		value<-'#/view'+c.name.toLower()+'/{{idelement}}/main',
+		tag<-acreate
+	  ),
+	  textpappercreate: TagML!Text(
+	    content<-'Main View',
+		parent<-acreate
+	  ),
+	  classpappercreate: TagML!Attribute(
+	    name<-'link',
+		tag<-pappercreate
+	  ),
+	  ironpages: TagML!Tag(
+	    name<-'iron-pages',
+		parent<-templateht
+	  ),
+	  attrironpages: TagML!Attribute(
+	    name<-'attr-for-selected',
+		value<-'name',
+		tag<-ironpages
+	  ),
+	  selectironpages: TagML!Attribute(
+	    name<-'selected',
+		value<-'[[routeData.typepage]]',
+		tag<-ironpages
+	  ),
+	  fallback: TagML!Attribute(
+	    name<-'fallback-selectio',
+		value<-'view404',
+		tag<-ironpages
+	  ),
+	  item: TagML!Tag(
+	    name<-'view-'+c.name.toLower(),
+		parent<-ironpages
+	  ),
+	  name: TagML!Attribute(
+	    name<-'name',
+		value<-'main',
+		tag<-item
+	  ),
+	  idview: TagML!Attribute(
+	    name<-'idelement',
+		value<-'{{idelement}}',
+		tag<-item
+	  ),
+	  
+	  script: TagML!Tag(
+	    name<-'script',
+		parent<-dom
+	  ),
+	  scripttext:TagML!Text(
+	    parent<-script,
+		content<-'  Polymer({
+    is: "menu-'+c.name.toLower()+'",
+         properties: {
+		    type:{
+               type: String,
+               value: "get'+c.name.substring(1,1).toUpper()+c.name.substring(2,c.name.size())+'"
+            },
+			idelement:{
+               type: String,
+               value: "0"
+           },
+		   routeData:{
+		   	 typepage:"main"
+		   },
+			computeURL:{
+                type: String,
+                computed: "processParams(idelement)"
+            }
+        },
+		processParams: function(idelement) {
+      		return "/view'+c.name.toLower()+'/"+idelement+"/:typepage";
+      	}
+  });'
+	  )
+	  
+	  do{
+	  	for (ass in c.getAssociations()){
+  		 for (p in ass.memberEnd){
+  		 	if(not p.class.oclIsUndefined()){
+	  		 	if ((p.upperBound()<0 and p.opposite.upperBound()<0) and not ((p.type.name=c.name) and (p.class.name=p.type.name))){
+	  		 		if (p.class.name<>c.name){
+	  		 		papertab.content<-thisModule.PaperTabMany(p.class,c,papertab);
+	  		 		ironpages.content<-thisModule.ElementsListMenu(p.class,'get'+c.name+p.class.name+'s',papertab);
+	  		 		}
+	  		 		else{
+	  		 		papertab.content<-thisModule.PaperTabMany(p.type,c,papertab);
+	  		 		ironpages.content<-thisModule.ElementsListMenu(p.type,'get'+c.name+p.type.name+'s',papertab);
+	  		 		}
+	  		 	}
+	  		 	if ((p.upperBound()<0 and p.opposite.upperBound()<0) and (p.type.name=c.name) and (p.class.name=p.type.name)){
+	  		 		papertab.content<-thisModule.PaperTabMany(p.class,c,papertab);
+	  		 		ironpages.content<-thisModule.ElementsListMenu(p.class,'get'+c.name+'List'+p.class.name+'s',papertab);
+	  		 	}
+	  		 	if ((p.upperBound()<0 and p.opposite.upperBound()=1) and (p.type.name=c.name) and (p.class.name=c.name)){
+	  		 		papertab.content<-thisModule.PaperTabMany(p.class,c,papertab);
+	  		 		ironpages.content<-thisModule.ElementsListMenu(p.class,'get'+c.name+p.class.name+'s',papertab);
+	  		 	}
+	  		 	if (p.upperBound()=1 and p.opposite.upperBound()<0 and (p.type.name=c.name) and (p.class.name<>p.type.name)){
+	  		 		papertab.content<-thisModule.PaperTabMany(p.class,c,papertab);
+	  		 		ironpages.content<-thisModule.ElementsListMenu(p.class,'get'+c.name+thisModule.getUpperFirst(p.class.name)+'Childs',papertab);
+	  		 	}
+	  		 	
+  		 	}
+  		 	
+  		 }
+		  
+	  	}
+	  
+	  }
+	  
+		
+}
+	 
+
+lazy rule VistaElement{
+	from 
+	  c: UML!Class,
+	  folder: TagML!Tag
+	to
+	
+  document1: TagML!Document(
+	  	name<-'view-'+c.name.toLower()+'.html',
+		parent<-folder
+	  ),
+	  html: TagML!Tag(
+	  	document<-document1
+	  ),
+	  importHead: TagML!Tag(
+	    name<-'link',
+		parent<-html
+	  ),
+	  href: TagML!Attribute(
+	    name<-'href',
+		value<-'../bower_components/polymer/polymer.html',
+		tag<-importHead
+	  ),
+	  rel: TagML!Attribute(
+	    name<-'rel',
+		value<-'import',
+		tag<-importHead
+	  ),
+	  importHead2: TagML!Tag(
+	    name<-'link',
+		parent<-html
+	  ),
+	  href2: TagML!Attribute(
+	    name<-'href',
+		value<-'shared-styles.html',
+		tag<-importHead2
+	  ),
+	  rel2: TagML!Attribute(
+	    name<-'rel',
+		value<-'import',
+		tag<-importHead2
+	  ),
+	  dom: TagML!Tag(
+	 	name<-'dom-module',
+		parent<-html
+	  ),
+	  iddom: TagML!Attribute(
+	  	name<-'id',
+		value<-'view-'+c.name.toLower(),
+		tag<-dom
+	  ),
+	 templateht: TagML!Tag(
+	    name<-'template',
+		parent<-dom
+	  ),
+	  style: TagML!Tag(
+	    name<-'style',
+		parent<-templateht
+	  ),
+	  styleis: TagML!Attribute(
+	    name<-'include',
+		value<-'shared-styles',
+		tag<-style
+	  ),
+	  contentstylet: TagML!Text(
+	  	content<-'  
+    /* Reglas CSS para tu elemento */
+	 paper-button.custom:hover {
+        background-color: var(--paper-indigo-100);
+    }
+	  paper-tab[link] a {
+	    @apply(--layout-horizontal);
+	    @apply(--layout-center-center);
+	    color: #fff;
+	    background: #5BCCAA;
+	    text-decoration: none;
+	  } 	
+
+    paper-button.indigo {
+        background-color: var(--paper-indigo-500);
+        color: white;
+        --paper-button-raised-keyboard-focus: {
+            background-color: var(--paper-pink-a200) !important;
+            color: white !important;
+        };
+    }',
+      parent<-style
+	  ),
+	  ajax:TagML!Tag(
+	  	parent<-templateht,
+		content<-thisModule.ironAjax(ajax)
+	  ),
+	  divcard: TagML!Tag(
+	    name<-'div',
+		parent<-templateht
+	  ),
+	  classdivcard: TagML!Attribute(
+	    name<-'class',
+		value<-'card',
+		tag<-divcard
+	  ),
+	  form: TagML!Tag(
+	    name<-'form',
+		parent<-divcard,
+		content<-thisModule.getProperties(c)->collect(a | thisModule.FormElementItemView(a,form)),
+		attribute <- thisModule.Form(c.name.toLower()+'action',form) 
+	  ),
+	   dropdownmenu: TagML!Tag(
+	  	 name<-'paper-dropdown-menu',
+		 parent<-form
+	  ),
+	  labeldropdownmenu: TagML!Attribute(
+	  	 name<-'label',
+		 value<-'Choose an action',
+		 tag<-dropdownmenu
+	  ),
+	  paperlist: TagML!Tag(
+	  	 name<-'paper-listbox',
+		 parent<-dropdownmenu
+	  ),
+	  classpaperlist: TagML!Attribute(
+	  	 name<-'class',
+		 value<-'dropdown-content',
+		 tag<-paperlist
+	  ),
+	  attrpaperlist: TagML!Attribute(
+	  	 name<-'attr-for-selected',
+		 value<-'value',
+		 tag<-paperlist
+	  ),
+	  selectedpaperlist: TagML!Attribute(
+	  	 name<-'selected',
+		 value<-'{{'+c.name.toLower()+'action}}',
+		 tag<-paperlist
+	  ),
+	  paperitem: TagML!Tag(
+	  	 name<-'paper-item',
+		 parent<-paperlist
+	  ),
+	  valuetemplaterepeat: TagML!Attribute(
+	  	 name<-'value',
+		 value<-'delete'+thisModule.getUpperFirst(c.name),
+		 tag<-paperitem
+	  ),
+	  textpaperitem: TagML!Text(
+		 content<-'Delete',
+		 parent<-paperitem
+	  ),
+	  	  paperitem2: TagML!Tag(
+	  	 name<-'paper-item',
+		 parent<-paperlist
+	  ),
+	  valuetemplaterepea2t: TagML!Attribute(
+	  	 name<-'value',
+		 value<-'update'+thisModule.getUpperFirst(c.name),
+		 tag<-paperitem2
+	  ),
+	  textpaperitem2: TagML!Text(
+		 content<-'Update',
+		 parent<-paperitem2
+	  ),
+	  type: TagML!Tag(
+	  	 name<-'paper-input',
+		 parent<-form
+	  ),
+	  nametype: TagML!Attribute(
+	  	 name<-'name',
+		 value<-'type',
+		 tag<-type
+	  ),
+	  typetype: TagML!Attribute(
+	  	name<-'type',
+		value<-'hidden',
+		tag<-type
+	  ),
+	  automaticid: TagML!Tag(
+	  	 name<-'paper-input',
+		 parent<-form
+	  ),
+	  nameautomaticid: TagML!Attribute(
+	  	 name<-'name',
+		 value<-thisModule.getPrimaryKey(c),
+		 tag<-automaticid
+	  ),
+	  typeautomaticid: TagML!Attribute(
+	  	name<-'type',
+		value<-'hidden',
+		tag<-automaticid
+	  ),
+	  valueatomatic: TagML!Attribute(
+	  	name<-'value',
+		value<-'{{idelement}}',
+		tag<-automaticid
+	  ),
+	  styletype: TagML!Attribute(
+	  	name<-'style',
+		value<-'display: none;',
+		tag<-type
+	  ),
+	  styletypatomaticide: TagML!Attribute(
+	  	name<-'style',
+		value<-'display: none;',
+		tag<-automaticid
+	  ),
+	  valuetype: TagML!Attribute(
+	  	name<-'value',
+		value<-'{{'+c.name.toLower()+'action}}',
+		tag<-type
+	  ),
+	  paperbutton: TagML!Tag(
+	  	content<-thisModule.PaperButtonForm(c.name.toLower()+'action','Submit',paperbutton),
+	  	parent<-form
+	  ),
+	  
+      divext: TagML!Tag(
+	    name<-'div',
+		parent<-divcard
+	  ),
+	  classdivext: TagML!Attribute(
+	  	 name<-'class',
+		 value<-'out',
+		 tag<-divext
+	  ),
+	  br1: TagML!Tag(
+	    name<-'br',
+        parent<-templateht
+	  ),
+	  br2: TagML!Tag(
+	    name<-'br',
+        parent<-templateht
+	  ),
+	  script: TagML!Tag(
+	    name<-'script',
+		parent<-dom
+	  ),
+	  scripttext:TagML!Text(
+	    parent<-script,
+		content<-'  Polymer({
+    is: "view-'+c.name.toLower()+'",
+         properties: {
+		    type:{
+               type: String,
+               value: "get'+c.name.substring(1,1).toUpper()+c.name.substring(2,c.name.size())+'"
+            },
+			idelement:{
+               type: String,
+               value: "0"
+            },
+            ajaxParams: {
+                type: String,
+                computed: "processParams(type,idelement)"
+            }
+        },
+        listeners: {
+            "iron-form-response": "formResponse",
+            "iron-form-submit": "formSubmit",
+            "iron-form-error": "formError"
+        },
+        formSubmit: function (event) {
+           // this.querySelector(".out").innerHTML = JSON.stringify(event.detail);
+        },
+        formResponse: function (event, response) {
+            console.log(event.detail);
+            if (200 === response.xhr.status) {
+                var data = response.xhr;
+                console.log(response);
+                if(!data.response.success){
+                    this.querySelector(".out").innerHTML = "Error with the send";
+                }
+                else{
+                  this.querySelector(".out").innerHTML = "Successful!!";
+                  if(!this.'+c.name.toLower()+'action.includes("delete")){
+                	document.location.reload();
+                  }
+                  else{
+                  	document.location.href = "#/'+c.name.toLower()+'";
+                  	document.location.reload();
+                  }
+                	
+                }
+            }
+        },
+        formError: function (event) {
+            this.querySelector(".out").innerHTML = event.detail.error;
+        },
+		processParams: function(type1,idelement1) {
+			return {
+				alt: "json",
+				q: "chrome",
+				type: type1,
+				'+thisModule.getPrimaryKey(c)+': idelement1
+			};
+		},
+		_getParams: function(type1,idelement1) {
+			return {
+				alt: "json",
+				q: "chrome",
+				type: type1,
+				idelement: idelement1
+			};
+		}
+  });'
+	  )
+	 do{
+	 	if(c.getAllAttributes()->select(l | l.isID and c=l.class)->size()>0){
+	 		automaticid.name<-'null';
+	 	}
+	  	for (ass in c.getAssociations()){
+  		 for (p in ass.memberEnd){
+  		 	if(not p.class.oclIsUndefined()){
+	  		 	if ((p.upperBound()<0 and p.opposite.upperBound()<0) and not ((p.type.name=c.name) and (p.class.name=p.type.name))){
+	  		 		if (p.class.name<>c.name){
+					templateht.content<-thisModule.BlockElementSelect('div',p.class,c,c.name+p.class.name+'s',templateht);
+	  		 		}
+	  		 		else{
+					templateht.content<-thisModule.BlockElementSelect('div',p.type,c,c.name+p.type.name+'s',templateht);
+	  		 		}
+	  		 	}
+	  		 	if ((p.upperBound()<0 and p.opposite.upperBound()<0) and (p.type.name=c.name) and (p.class.name=p.type.name)){
+                    templateht.content<-thisModule.BlockElementSelect('div',p.class,c,c.name+'List'+p.class.name+'s',templateht);
+	  		 	}
+	  		 	if ((p.upperBound()<0 and p.opposite.upperBound()=1) and (p.type.name=c.name) and (p.class.name=c.name)){
+					templateht.content<-thisModule.BlockElementSelect('null2',p.class,c,c.name+p.class.name+'s',templateht);
+	  		 	}
+	  		 	if (p.upperBound()=1 and p.opposite.upperBound()<0 and (p.type.name=c.name) and (p.class.name<>p.type.name)){
+	  		 		templateht.content<-thisModule.BlockElementSelect('null2',p.class,c,c.name+p.class.name+'Childs',templateht);
+	  		 	}
+	  		 	
+  		 	}
+  		 	
+  		 }
+		  
+	  	}
+	  
+	  }
+	  
+	  
+		
+}
+
+
+lazy rule JSGlobals{
+	from 
+	  c: UML!Class
+	to
+	  document1: TagML!Document(
+	  	name<-'app.js'
+	  ),		
+	  javascript: TagML!Tag(
+		document<-document1
+	  ),	
+	  javascriptText: TagML!Text(
+	    parent<-javascript,
+		content<-'
+		(function(document) {
+			  "use strict";
+			
+			  var __configureProperties = Polymer.Base._configureProperties;
+			
+			  Polymer.Base._addFeature({
+			      _configureProperties: function(properties, config) {
+			
+			          if (properties) {
+			            // Add global properties here
+			              properties.urlApi = {
+			                type: String,
+			                value: "/service/script.php"
+			              };
+			            }
+			
+			          __configureProperties.apply(this, [properties, config]);
+			      }
+			  });
+			
+		})(document);
+		'
+	  )
+}
+
+lazy rule BowerJson{
+	from 
+	  documento : TagML!Document
+	to
+	  bowejson: TagML!Tag(
+		document<-documento
+	  ),	
+	  json: TagML!Text(
+	    parent<-bowejson,
+		content<-'
+	{
+	  "name": "polymer-starter-kit1",
+	  "authors": [
+	    "The Polymer Authors"
+	  ],
+	  "private": true,
+	  "dependencies": {
+	    "iron-iconset-svg": "PolymerElements/iron-iconset-svg",
+	    "iron-localstorage": "PolymerElements/iron-localstorage",
+	    "iron-media-query": "PolymerElements/iron-media-query",
+		"app-layout": "PolymerElements/app-layout",
+		"app-route": "PolymerElements/app-route",
+		"iron-pages": "PolymerElements/iron-pages",
+		"iron-selector": "PolymerElements/iron-selector",
+		"iron-icons": "PolymerElements/iron-icons",
+		"paper-drawer-panel": "PolymerElements/paper-drawer-panel",
+		"paper-icon-button": "PolymerElements/paper-icon-button",
+		"paper-material": "PolymerElements/paper-material",
+		"paper-menu": "PolymerElements/paper-menu",
+		"paper-scroll-header-panel": "PolymerElements/paper-scroll-header-panel",
+		"paper-styles": "PolymerElements/paper-styles",
+		"paper-toast": "PolymerElements/paper-toast",
+		"paper-toolbar": "PolymerElements/paper-toolbar",
+		"paper-checkbox": "PolymerElements/paper-checkbox",
+		"paper-item": "PolymerElements/paper-item",
+		"paper-button": "PolymerElements/paper-button",
+		"paper-input": "PolymerElements/paper-input",
+		"paper-dropdown-menu": "PolymerElements/paper-dropdown-menu",
+		"paper-listbox": "PolymerElements/paper-listbox",
+		"paper-tabs": "PolymerElements/paper-tabs",
+		"paper-header-panel": "PolymerElements/paper-header-panel",
+		"iron-ajax": "PolymerElements/iron-ajax",
+		"iron-list": "PolymerElements/iron-list",
+		"iron-flex-layout": "PolymerElements/iron-flex-layout",
+		"iron-autogrow-textarea": "PolymerElements/iron-autogrow-textarea",
+	    "polymer": "Polymer/polymer#^1.6.0"
+	  },
+	  "devDependencies": {
+	    "web-component-tester": "^4.0.0"
+	  }
+	}
+		
+		'
+	  )
+}
+	 
+
+

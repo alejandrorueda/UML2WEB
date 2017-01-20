@@ -1,0 +1,311 @@
+<!DOCTYPE html>
+<link rel="import" href="../bower_components/polymer/polymer.html">
+  <link rel="import" href="../bower_components/app-layout/app-drawer/app-drawer.html">
+  <link rel="import" href="../bower_components/app-layout/app-drawer-layout/app-drawer-layout.html">
+  <link rel="import" href="../bower_components/app-layout/app-header/app-header.html">
+  <link rel="import" href="../bower_components/app-layout/app-header-layout/app-header-layout.html">
+  <link rel="import" href="../bower_components/app-layout/app-scroll-effects/app-scroll-effects.html">
+  <link rel="import" href="../bower_components/app-layout/app-toolbar/app-toolbar.html">
+  <link rel="import" href="../bower_components/app-route/app-location.html">
+  <link rel="import" href="../bower_components/app-route/app-route.html">
+  <link rel="import" href="../bower_components/iron-pages/iron-pages.html">
+  <link rel="import" href="../bower_components/iron-selector/iron-selector.html">
+  <link rel="import" href="../bower_components/iron-icons/iron-icons.html">
+  <link rel="import" href="../bower_components/iron-icons/social-icons.html">
+  <link rel="import" href="../bower_components/iron-icons/maps-icons.html">
+  <link rel="import" href="../bower_components/iron-icons/social-icons.html">
+  <link rel="import" href="../bower_components/iron-icons/image-icons.html">
+  
+  <!-- Paper elements -->
+  <link rel="import" href="../bower_components/paper-drawer-panel/paper-drawer-panel.html">
+  <link rel="import" href="../bower_components/paper-icon-button/paper-icon-button.html">
+  <link rel="import" href="../bower_components/paper-item/paper-item.html">
+  <link rel="import" href="../bower_components/paper-material/paper-material.html">
+  <link rel="import" href="../bower_components/paper-menu/paper-menu.html">
+  <link rel="import" href="../bower_components/paper-menu/paper-submenu.html">
+  <link rel="import" href="../bower_components/paper-scroll-header-panel/paper-scroll-header-panel.html">
+  <link rel="import" href="../bower_components/paper-styles/typography.html">
+  <link rel="import" href="../bower_components/paper-toast/paper-toast.html">
+  <link rel="import" href="../bower_components/paper-toolbar/paper-toolbar.html">
+  <link rel="import" href="../bower_components/paper-checkbox/paper-checkbox.html">
+  <link rel="import" href="../bower_components/paper-item/paper-item.html">
+  <link rel="import" href="../bower_components/paper-button/paper-button.html">
+  <link rel="import" href="../bower_components/paper-input/paper-input.html">
+  <link rel="import" href="../bower_components/paper-material/paper-material.html">
+  <link rel="import" href="../bower_components/paper-fab/paper-fab.html">
+  <link rel="import" href="../bower_components/paper-dropdown-menu/paper-dropdown-menu.html">
+  <link rel="import" href="../bower_components/paper-dropdown-menu/paper-dropdown-menu-light.html">
+  <link rel="import" href="../bower_components/paper-listbox/paper-listbox.html">
+  <link rel="import" href="../bower_components/paper-drawer-panel/paper-drawer-panel.html">
+  <link rel="import" href="../bower_components/paper-tabs/paper-tabs.html">
+  <link rel="import" href="../bower_components/paper-slider/paper-slider.html">
+  <link rel="import" href="../bower_components/paper-header-panel/paper-header-panel.html">
+  <link rel="import" href="../bower_components/iron-ajax/iron-ajax.html">
+  <link rel="import" href="../bower_components/paper-item/paper-icon-item.html">
+  <link rel="import" href="../bower_components/paper-item/paper-item-body.html">
+  <link rel="import" href="../bower_components/paper-icon-button/paper-icon-button.html">
+  <link rel="import" href="../bower_components/iron-list/iron-list.html">
+  <link rel="import" href="../bower_components/paper-toolbar/paper-toolbar.html">
+  <link rel="import" href="../bower_components/iron-flex-layout/iron-flex-layout.html">
+  <link rel="import" href="../bower_components/iron-flex-layout/iron-flex-layout-classes.html">
+  <link rel="import" href="../bower_components/iron-autogrow-textarea/iron-autogrow-textarea.html">
+  <link rel="import" href="../bower_components/gold-email-input/gold-email-input.html">
+  <link rel="import" href="../bower_components/iron-form/iron-form.html">
+  <link rel="import" href="../bower_components/platinum-https-redirect/platinum-https-redirect.html">
+  <link rel="import" href="../bower_components/app-storage/app-indexeddb-mirror/app-indexeddb-mirror.html">
+  <link rel="import" href="../bower_components/app-storage/app-indexeddb-mirror/app-indexeddb-mirror-client.html">
+  <link rel="import" href="../bower_components/app-storage/app-indexeddb-mirror/app-indexeddb-mirror-client.html">
+  <link rel="import" href="../bower_components/app-route/app-location.html">
+  <link rel="import" href="../bower_components/app-route/app-route.html">
+  <link rel="import" href="../bower_components/iron-localstorage/iron-localstorage.html" />
+  <link rel="import" href="../bower_components/app-storage/app-localstorage/app-localstorage-document.html">
+  <link rel="import" href="../bower_components/app-storage/app-storage-behavior.html">
+  <link rel="import" href="../bower_components/app-storage/app-network-status-behavior.html">
+  <link rel="import" href="../bower_components/byutv-jsonp/byutv-jsonp.html" />
+  <link rel="import" href="my-icons.html">
+  <link rel='import' href='element-usuario.html'>
+    <link rel='import' href='new-usuario.html'>
+    <link rel='import' href='view-usuario.html'>
+    <link rel='import' href='element-mensajes.html'>
+    <link rel='import' href='new-mensajes.html'>
+    <link rel='import' href='view-mensajes.html'>
+    <link rel='import' href='element-grupo.html'>
+    <link rel='import' href='new-grupo.html'>
+    <link rel='import' href='view-grupo.html'>
+    <link rel='import' href='element-viaje.html'>
+    <link rel='import' href='new-viaje.html'>
+    <link rel='import' href='view-viaje.html'>
+    <link rel='import' href='element-perfil.html'>
+    <link rel='import' href='new-perfil.html'>
+    <link rel='import' href='view-perfil.html'>
+    <link rel='import' href='element-invitacion.html'>
+    <link rel='import' href='new-invitacion.html'>
+    <link rel='import' href='view-invitacion.html'>
+    <link rel='import' href='element-administrador.html'>
+    <link rel='import' href='new-administrador.html'>
+    <link rel='import' href='view-administrador.html'>
+    <link rel='import' href='element-colaborador.html'>
+    <link rel='import' href='new-colaborador.html'>
+    <link rel='import' href='view-colaborador.html'>
+  <dom-module id='my-app'>
+    <template>
+      <style>
+        :host {
+                --app-primary-color: #4285f4;
+                --app-secondary-color: black;
+                display: block;
+              	}
+              app-header {
+                color: #fff;
+                background-color: var(--app-primary-color);
+              }
+              app-header paper-icon-button {
+                --paper-icon-button-ink-color: white;
+              }
+              .drawer-list {
+                margin: 0 20px;
+              }
+              .drawer-list a {
+                display: block;
+                padding: 0 16px;
+                text-decoration: none;
+                color: var(--app-secondary-color);
+                line-height: 40px;
+              }
+              .drawer-list a.iron-selected {
+                color: black;
+                font-weight: bold;
+              }
+      </style>
+      <app-location route='{{route}}'>
+      </app-location>
+      <app-route route='{{route}}' pattern='/:page' data='{{routeData}}' tail='{{subroute}}'>
+      </app-route>
+      <app-route route='{{subroute}}' pattern='/:id' data='{{subrouteData}}'>
+      </app-route>
+      <app-drawer-layout fullbleed>
+        <app-drawer>
+          <app-toolbar class='menu-name'>
+            Menu
+          </app-toolbar>
+          <iron-selector class='drawer-list' attr-for-selected='name' selected='[[page]]' role='navigation'>
+            <a name='home' href='/'>
+              <iron-icon icon='icons:home'>
+              </iron-icon>
+              <span>
+                Home
+              </span>
+            </a>
+            <paper-submenu>
+              <paper-itemt class='menu-trigger'>
+                <iron-icon icon='icons:view-list'>
+                </iron-icon>
+                Lists
+              </paper-itemt>
+              <paper-menu class='menu-content'>
+                <a name='usuario' href='/usuario'>
+                  <paper-itemt>
+                    <iron-icon icon='social:group'>
+                    </iron-icon>
+                    <span>
+                      Usuario
+                    </span>
+                  </paper-itemt>
+                </a>
+                <a name='mensajes' href='/mensajes'>
+                  <paper-itemt>
+                    <iron-icon icon='social:group'>
+                    </iron-icon>
+                    <span>
+                      Mensajes
+                    </span>
+                  </paper-itemt>
+                </a>
+                <a name='grupo' href='/grupo'>
+                  <paper-itemt>
+                    <iron-icon icon='social:group'>
+                    </iron-icon>
+                    <span>
+                      Grupo
+                    </span>
+                  </paper-itemt>
+                </a>
+                <a name='viaje' href='/viaje'>
+                  <paper-itemt>
+                    <iron-icon icon='social:group'>
+                    </iron-icon>
+                    <span>
+                      Viaje
+                    </span>
+                  </paper-itemt>
+                </a>
+                <a name='perfil' href='/perfil'>
+                  <paper-itemt>
+                    <iron-icon icon='social:group'>
+                    </iron-icon>
+                    <span>
+                      Perfil
+                    </span>
+                  </paper-itemt>
+                </a>
+                <a name='invitacion' href='/invitacion'>
+                  <paper-itemt>
+                    <iron-icon icon='social:group'>
+                    </iron-icon>
+                    <span>
+                      Invitacion
+                    </span>
+                  </paper-itemt>
+                </a>
+                <a name='administrador' href='/administrador'>
+                  <paper-itemt>
+                    <iron-icon icon='social:group'>
+                    </iron-icon>
+                    <span>
+                      Administrador
+                    </span>
+                  </paper-itemt>
+                </a>
+                <a name='colaborador' href='/colaborador'>
+                  <paper-itemt>
+                    <iron-icon icon='social:group'>
+                    </iron-icon>
+                    <span>
+                      Colaborador
+                    </span>
+                  </paper-itemt>
+                </a>
+              </paper-menu>
+            </paper-submenu>
+          </iron-selector>
+        </app-drawer>
+        <app-header-layout has-scrolling-region>
+          <app-header condenses reveals effects='waterfall'>
+            <app-toolbar>
+              <paper-icon-button icon='menu' drawer-toggle>
+              </paper-icon-button>
+              <div main-title>
+                Prueba
+              </div>
+            </app-toolbar>
+          </app-header>
+          <iron-pages attr-for-selected='name' selected='[[routeData.page]]' fallback-selectio='view404' rol='main'>
+            <element-usuario name='usuario'>
+            </element-usuario>
+            <new-usuario name='newusuario'>
+            </new-usuario>
+            <view-usuario name='viewusuario' idelement='[[subrouteData.id]]'>
+            </view-usuario>
+            <element-mensajes name='mensajes'>
+            </element-mensajes>
+            <new-mensajes name='newmensajes'>
+            </new-mensajes>
+            <view-mensajes name='viewmensajes' idelement='[[subrouteData.id]]'>
+            </view-mensajes>
+            <element-grupo name='grupo'>
+            </element-grupo>
+            <new-grupo name='newgrupo'>
+            </new-grupo>
+            <view-grupo name='viewgrupo' idelement='[[subrouteData.id]]'>
+            </view-grupo>
+            <element-viaje name='viaje'>
+            </element-viaje>
+            <new-viaje name='newviaje'>
+            </new-viaje>
+            <view-viaje name='viewviaje' idelement='[[subrouteData.id]]'>
+            </view-viaje>
+            <element-perfil name='perfil'>
+            </element-perfil>
+            <new-perfil name='newperfil'>
+            </new-perfil>
+            <view-perfil name='viewperfil' idelement='[[subrouteData.id]]'>
+            </view-perfil>
+            <element-invitacion name='invitacion'>
+            </element-invitacion>
+            <new-invitacion name='newinvitacion'>
+            </new-invitacion>
+            <view-invitacion name='viewinvitacion' idelement='[[subrouteData.id]]'>
+            </view-invitacion>
+            <element-administrador name='administrador'>
+            </element-administrador>
+            <new-administrador name='newadministrador'>
+            </new-administrador>
+            <view-administrador name='viewadministrador' idelement='[[subrouteData.id]]'>
+            </view-administrador>
+            <element-colaborador name='colaborador'>
+            </element-colaborador>
+            <new-colaborador name='newcolaborador'>
+            </new-colaborador>
+            <view-colaborador name='viewcolaborador' idelement='[[subrouteData.id]]'>
+            </view-colaborador>
+          </iron-pages>
+        </app-header-layout>
+      </app-drawer-layout>
+    </template>
+    <script>
+      Polymer({
+            is: "my-app",
+      
+            properties: {
+              page: {
+                type: String,
+                reflectToAttribute: true,
+                observer: "_pageChanged"
+              }
+            },
+      
+            observers: [
+              "_routePageChanged(routeData.page)"
+            ],
+      
+            _routePageChanged: function(page) {
+              this.page = page || "home";
+            },
+      
+      
+            _showPage404: function() {
+              this.page = "view404";
+            }
+          });
+    </script>
+  </dom-module>

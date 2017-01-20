@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<link href='../bower_components/polymer/polymer.html' rel='import'>
+  <link href='shared-styles.html' rel='import'>
+  <dom-module id='menu-usuario'>
+    <template>
+      <style include='shared-styles'>
+        /* Reglas CSS para tu elemento */
+        	 paper-button.custom:hover {
+                background-color: var(--paper-indigo-100);
+            }
+        	  paper-tab[link] a {
+        	    @apply(--layout-horizontal);
+        	    @apply(--layout-center-center);
+        	    color: #fff;
+        	    background: #5BCCAA;
+        	    text-decoration: none;
+        	  } 	
+        
+            paper-button.indigo {
+                background-color: var(--paper-indigo-500);
+                color: white;
+                --paper-button-raised-keyboard-focus: {
+                    background-color: var(--paper-pink-a200) !important;
+                    color: white !important;
+                };
+            }
+      </style>
+      <app-location route='{{route}}' use-hash-as-path>
+      </app-location>
+      <app-route route='{{route}}' pattern='{{computeURL}}' data='{{routeData}}' tail='{{subroute}}'>
+      </app-route>
+      <paper-tabs selected='0'>
+        <paper-tab link>
+          <a href='#/viewusuario/{{idelement}}/main'>
+            Main View
+          </a>
+        </paper-tab>
+        <paper-tab link>
+          <a href='#/viewusuario/{{idelement}}/listusuario'>
+            List Usuario
+          </a>
+        </paper-tab>
+        <paper-tab link>
+          <a href='#/viewusuario/{{idelement}}/listgrupo'>
+            List Grupo
+          </a>
+        </paper-tab>
+        <paper-tab link>
+          <a href='#/viewusuario/{{idelement}}/listviaje'>
+            List Viaje
+          </a>
+        </paper-tab>
+        <paper-tab link>
+          <a href='#/viewusuario/{{idelement}}/listinvitacion'>
+            List Invitacion
+          </a>
+        </paper-tab>
+      </paper-tabs>
+      <iron-pages attr-for-selected='name' selected='[[routeData.typepage]]' fallback-selectio='view404'>
+        <view-usuario name='main' idelement='{{idelement}}'>
+        </view-usuario>
+        <element-usuario name='listusuario' idelement='{{idelement}}' type='getUsuarioListUsuarios'>
+        </element-usuario>
+        <element-grupo name='listgrupo' idelement='{{idelement}}' type='getUsuarioGrupos'>
+        </element-grupo>
+        <element-viaje name='listviaje' idelement='{{idelement}}' type='getUsuarioViajes'>
+        </element-viaje>
+        <element-invitacion name='listinvitacion' idelement='{{idelement}}' type='getUsuarioInvitacionChilds'>
+        </element-invitacion>
+      </iron-pages>
+    </template>
+    <script>
+      Polymer({
+          is: "menu-usuario",
+               properties: {
+      		    type:{
+                     type: String,
+                     value: "getUsuario"
+                  },
+      			idelement:{
+                     type: String,
+                     value: "0"
+                 },
+      		   routeData:{
+      		   	 typepage:"main"
+      		   },
+      			computeURL:{
+                      type: String,
+                      computed: "processParams(idelement)"
+                  }
+              },
+      		processParams: function(idelement) {
+            		return "/viewusuario/"+idelement+"/:typepage";
+            	}
+        });
+    </script>
+  </dom-module>

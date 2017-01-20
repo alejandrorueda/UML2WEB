@@ -1,0 +1,238 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<database name="prueba" defaultIdMethod="native">
+  
+  <table name="Usuario" phpName="Usuario" >
+        <column name="email" type="VARCHAR" size="1"
+          required="true" />
+        <column name="idusuario" type="VARCHAR" size="50"
+         primaryKey="true" required="true" />
+        <column name="avatar" type="VARCHAR" size="255"
+          required="true" />
+        <column name="apellidos" type="VARCHAR" size="100"
+          required="true" />
+        <column name="password" type="VARCHAR" size="50"
+          required="true" />
+        <column name="nombre" type="VARCHAR" size="50"
+          required="true" />
+     
+  
+  	    <unique name="ix_email_">
+               <unique-column name="email"/>
+           
+        </unique>
+      
+      
+       <column name="fkperfil" required="true" type="INTEGER" />
+       <foreign-key foreignTable="Perfil">
+  		  <reference local="fkperfil" foreign="idPerfil"/>
+     	</foreign-key>
+  
+  </table>
+  
+  <table name="viajes" isCrossRef="true">
+      <column name="idUsuario" primaryKey="true" type="VARCHAR" size="50"
+      />
+      
+      <column name="idViaje" primaryKey="true" type="INTEGER"/>
+  
+     <foreign-key foreignTable="Usuario" name="Usuario_viaje">
+  	  <reference local="idUsuario" foreign="idusuario"/>
+     </foreign-key>
+  
+    <foreign-key foreignTable="Viaje" name="idViaje_Usuario">
+  	  <reference local="idViaje" foreign="idViaje"/>
+     </foreign-key>
+  </table>
+  <table name="amigos" isCrossRef="true">
+      <column name="idUsuario" primaryKey="true" type="VARCHAR" size="50"
+      />
+      
+      <column name="relacionusuario" primaryKey="true" type="VARCHAR" size="50"
+      />
+  
+     <foreign-key foreignTable="Usuario" name="Usuario_usuario">
+  	  <reference local="idUsuario" foreign="idusuario"/>
+     </foreign-key>
+  
+    <foreign-key foreignTable="Usuario" name="relacionusuario_Usuario">
+  	  <reference local="relacionusuario" foreign="idusuario"/>
+     </foreign-key>
+  </table>
+  <table name="Usuario_grupos" isCrossRef="true">
+      <column name="idUsuario" primaryKey="true" type="VARCHAR" size="50"
+      />
+      
+      <column name="idGrupo" primaryKey="true" type="INTEGER"/>
+  
+     <foreign-key foreignTable="Usuario" name="Usuario_grupos">
+  	  <reference local="idUsuario" foreign="idusuario"/>
+     </foreign-key>
+  
+    <foreign-key foreignTable="Grupo" name="idGrupo_Usuario">
+  	  <reference local="idGrupo" foreign="idGrupo"/>
+     </foreign-key>
+  </table>
+  
+  
+  <table name="Mensajes" phpName="Mensajes" >
+        <column name="idMensajes" type="integer" primaryKey="true" autoIncrement="true"/>
+        <column name="descripcion" type="LONGVARCHAR"
+          required="true" />
+        <column name="asunto" type="VARCHAR" size="150"
+          required="true" />
+     
+  
+      
+      
+       <column name="fkpadre"  type="INTEGER" />
+       <foreign-key foreignTable="Mensajes">
+  		  <reference local="fkpadre" foreign="idMensajes"/>
+     	</foreign-key>
+       <column name="fkviaje"  type="INTEGER" />
+       <foreign-key foreignTable="Viaje">
+  		  <reference local="fkviaje" foreign="idViaje"/>
+     	</foreign-key>
+  
+  </table>
+  
+  
+  
+  <table name="Grupo" phpName="Grupo" >
+        <column name="idGrupo" type="integer" primaryKey="true" autoIncrement="true"/>
+        <column name="informacion" type="LONGVARCHAR"
+          required="true" />
+        <column name="nombre" type="VARCHAR" size="255"
+          required="true" />
+     
+  
+      
+      
+  </table>
+  
+  <table name="Grupo_viaje" isCrossRef="true">
+      <column name="idGrupo" primaryKey="true" type="INTEGER"/>
+      
+      <column name="idViaje" primaryKey="true" type="INTEGER"/>
+  
+     <foreign-key foreignTable="Grupo" name="Grupo_viaje">
+  	  <reference local="idGrupo" foreign="idGrupo"/>
+     </foreign-key>
+  
+    <foreign-key foreignTable="Viaje" name="idViaje_Grupo">
+  	  <reference local="idViaje" foreign="idViaje"/>
+     </foreign-key>
+  </table>
+  
+  
+  <table name="Viaje" phpName="Viaje" >
+        <column name="idViaje" type="integer" primaryKey="true" autoIncrement="true"/>
+        <column name="etiquetas" type="VARCHAR" size="1"
+          required="true" />
+        <column name="fechafinal" type="VARCHAR" size="1"
+          required="true" />
+        <column name="hospedaje" type="LONGVARCHAR"
+          required="true" />
+        <column name="imagenes" type="VARCHAR" size="1"
+          required="true" />
+        <column name="destino" type="VARCHAR" size="100"
+          required="true" />
+        <column name="nombre" type="VARCHAR" size="1"
+          required="true" />
+        <column name="fechainicio" type="DATE"
+          required="true" />
+        <column name="precio" type="DOUBLE"
+          required="true" />
+        <column name="informacion" type="LONGVARCHAR"
+          required="true" />
+        <column name="transporte" type="LONGVARCHAR"
+          required="true" />
+     
+  
+      
+      
+  </table>
+  
+  
+  
+  <table name="Perfil" phpName="Perfil" >
+        <column name="idPerfil" type="integer" primaryKey="true" autoIncrement="true"/>
+        <column name="informacion" type="LONGVARCHAR"
+          required="true" />
+        <column name="gustos" type="VARCHAR" size="1"
+          required="true" />
+        <column name="nacimiento" type="DATE"
+          required="true" />
+     
+  
+      
+      
+  </table>
+  
+  
+  
+  <table name="Invitacion" phpName="Invitacion" >
+        <column name="idInvitacion" type="integer" primaryKey="true" autoIncrement="true"/>
+        <column name="codigo" type="VARCHAR" size="1"
+          required="true" />
+        <column name="activo" type="BOOLEAN"
+          required="true" />
+     
+  
+  	    <unique name="ix_codigo_">
+               <unique-column name="codigo"/>
+           
+        </unique>
+      
+      
+       <column name="fkusuario" required="true" type="VARCHAR" size="50"
+        />
+       <foreign-key foreignTable="Usuario">
+  		  <reference local="fkusuario" foreign="idusuario"/>
+     	</foreign-key>
+  
+  </table>
+  
+  
+  
+  <table name="Administrador" phpName="Administrador" >
+        <column name="idAdministrador" type="integer" primaryKey="true" autoIncrement="true"/>
+     
+  
+  	    <unique name="ix_idAdministrador">
+           <unique-column name="idAdministrador"/>
+        </unique>
+      
+      	<behavior name="concrete_inheritance">
+      		<parameter name="extends" value="Usuario"/>
+      	</behavior>
+  </table>
+  
+  
+  
+  <table name="Colaborador" phpName="Colaborador" >
+        <column name="mensaje" type="INTEGER"
+           />
+        <column name="idColaborador2" type="VARCHAR" size="200"
+         primaryKey="true" required="true" />
+        <column name="prueba" type="BIGINT"
+          required="true" />
+     
+  
+  	    <unique name="ix_prueba_">
+               <unique-column name="prueba"/>
+           
+        </unique>
+  	    <unique name="ix_idColaborador2_prueba_">
+               <unique-column name="idColaborador2"/>
+               <unique-column name="prueba"/>
+           
+        </unique>
+      
+      	<behavior name="concrete_inheritance">
+      		<parameter name="extends" value="Usuario"/>
+      	</behavior>
+  </table>
+  
+  
+  
+</database>

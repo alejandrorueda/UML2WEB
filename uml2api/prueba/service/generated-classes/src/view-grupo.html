@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<link href='../bower_components/polymer/polymer.html' rel='import'>
+  <link href='shared-styles.html' rel='import'>
+  <dom-module id='view-grupo'>
+    <template>
+      <style include='shared-styles'>
+        /* Reglas CSS para tu elemento */
+        	 paper-button.custom:hover {
+                background-color: var(--paper-indigo-100);
+            }
+        	  paper-tab[link] a {
+        	    @apply(--layout-horizontal);
+        	    @apply(--layout-center-center);
+        	    color: #fff;
+        	    background: #5BCCAA;
+        	    text-decoration: none;
+        	  } 	
+        
+            paper-button.indigo {
+                background-color: var(--paper-indigo-500);
+                color: white;
+                --paper-button-raised-keyboard-focus: {
+                    background-color: var(--paper-pink-a200) !important;
+                    color: white !important;
+                };
+            }
+      </style>
+      <iron-ajax auto headers='{"Content-Type": "application/json;charset=utf-8"}' url='/service/script.php' params='{{ajaxParams}}' handle-as='json' debounce-duration='300' method='POST' last-response='{{response}}'>
+        </iron-ajax>
+      <div class='card'>
+        <form is='iron-form' method='post' action='/service/script.php' id='grupo'>
+          
+          <paper-input name='nombre' label='Nombre' required type='text'  maxlength='255'  disabled='true' value='{{response.Nombre}}'>
+          </paper-input>
+          <iron-autogrow-textarea name='informacion' label='Informacion' required  style='height: 171px; width: 899px;'  placeholder='Informacion' disabled='true' value='{{response.Informacion}}'>
+          </iron-autogrow-textarea>
+          <paper-input name='type' type='hidden' style='display: none;' value='{{type}}'>
+          </paper-input>
+        </form>
+        <div class='out'>
+        </div>
+      </div>
+      <br>
+      <br>
+      <div class='card'>
+        <iron-ajax auto headers='{"Content-Type": "application/json;charset=utf-8"}' url='/service/script.php' params='{"type":"getAllUsuario"}' handle-as='json' debounce-duration='300' method='POST' last-response='{{usuario2}}'>
+        </iron-ajax>
+        <h1>
+          Usuario
+        </h1>
+        <form is='iron-form' method='post' action='/service/script.php' id='grupousuario2'>
+          <paper-dropdown-menu label='Add Usuario'>
+            <paper-listbox class='dropdown-content' attr-for-selected='value' selected='{{usuariodate}}'>
+              <template is='dom-repeat' items='{{usuario2}}'>
+                <paper-item value='{{item.Idusuario}}'>
+                  {{item.Idusuario}}
+                </paper-item>
+              </template>
+            </paper-listbox>
+          </paper-dropdown-menu>
+          <paper-input name='type' type='hidden' style='display: none;' value='addGrupoUsuarios'>
+          </paper-input>
+          <paper-input name='idusuario' type='hidden' style='display: none;' value='{{usuariodate}}'>
+          </paper-input>
+          <paper-input name='idelement' type='hidden' style='display: none;' value='{{idelement}}'>
+          </paper-input>
+          <paper-button raised class='custom indigo' onclick='document.getElementById("grupousuario2").submit()'>
+            <iron-icon icon='icon:send'>
+            </iron-icon>
+            Send
+          </paper-button>
+          <br>
+        </form>
+      </div>
+    </template>
+    <script>
+      Polymer({
+          is: "view-grupo",
+               properties: {
+      		    type:{
+                     type: String,
+                     value: "getGrupo"
+                  },
+      			idelement:{
+                     type: String,
+                     value: "0"
+                  },
+                  ajaxParams: {
+                      type: String,
+                      computed: "processParams(type,idelement)"
+                  }
+              },
+              listeners: {
+                  "iron-form-response": "formResponse",
+                  "iron-form-submit": "formSubmit",
+                  "iron-form-error": "formError"
+              },
+              formSubmit: function (event) {
+                  this.querySelector(".out").innerHTML = JSON.stringify(event.detail);
+              },
+              formResponse: function (event, response) {
+                  console.log(event.detail);
+                  if (200 === response.xhr.status) {
+                      var data = response.xhr;
+                      console.log(response);
+                      if(!data.response.success){
+                          this.querySelector(".outputServer").innerHTML = "Error al crear grupo, por favor intentelo mas tarde";
+                      }
+                  }
+              },
+              formError: function (event) {
+                  this.querySelector(".outputServer").innerHTML = event.detail.error;
+              },
+      		processParams: function(type1,idelement1) {
+      			return {
+      				alt: "json",
+      				q: "chrome",
+      				type: type1,
+      				idGrupo: idelement1
+      			};
+      		}
+        });
+    </script>
+  </dom-module>

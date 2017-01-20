@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<link href='../bower_components/polymer/polymer.html' rel='import'>
+  <link href='shared-styles.html' rel='import'>
+  <dom-module id='new-invitacion'>
+    <template>
+      <style include='shared-styles'>
+        /* Reglas CSS para tu elemento */
+        	 paper-button.custom:hover {
+                background-color: var(--paper-indigo-100);
+            }
+        
+            paper-button.indigo {
+                background-color: var(--paper-indigo-500);
+                color: white;
+                --paper-button-raised-keyboard-focus: {
+                    background-color: var(--paper-pink-a200) !important;
+                    color: white !important;
+                };
+            }
+      </style>
+      <div class='card'>
+        <form is='iron-form' method='post' action='/service/script.php' id='invitacion'>
+          
+          <h1>
+            Usuario
+          </h1>
+          
+          <paper-input name='avatar' label='Avatar' required type='text'  maxlength='255' >
+          </paper-input>
+          <paper-input name='nombre' label='Nombre' required type='text'  maxlength='50' >
+          </paper-input>
+          
+          
+          <paper-input name='password' label='Password' required type='text'  maxlength='50' >
+          </paper-input>
+          <paper-input name='apellidos' label='Apellidos' required type='text'  maxlength='100' >
+          </paper-input>
+          <paper-input name='email' label='Email' required type='text'  maxlength='1' >
+          </paper-input>
+          
+          <h1>
+            Perfil
+          </h1>
+          <iron-autogrow-textarea name='informacion' label='Informacion' required  style='height: 171px; width: 899px;'  placeholder='Informacion'>
+          </iron-autogrow-textarea>
+          <paper-input name='nacimiento' label='Nacimiento' required type='date'   >
+          </paper-input>
+          <paper-input name='gustos' label='Gustos' required type='text'  maxlength='1' >
+          </paper-input>
+          <paper-input name='idusuario' label='Idusuario' required type='text'  maxlength='50' >
+          </paper-input>
+          <paper-checkbox name='activo' label='Activo' required type   >
+          </paper-checkbox>
+          <paper-input name='codigo' label='Codigo' required type='text'  maxlength='1' >
+          </paper-input>
+          <paper-input name='type' type='hidden' style='display: none;' value='{{type}}'>
+          </paper-input>
+          <paper-button raised class='custom indigo' onclick='document.getElementById("invitacion").submit()'>
+            <iron-icon icon='icon:send'>
+            </iron-icon>
+            Send
+          </paper-button>
+          <div class='output'>
+          </div>
+          <br>
+          <div class='outputServer'>
+          </div>
+          <br>
+        </form>
+      </div>
+    </template>
+    <script>
+      Polymer({
+          is: "new-invitacion",
+               properties: {
+      		    type:{
+                     type: String,
+                     value: "addInvitacion"
+                  }
+              },
+              listeners: {
+                  "iron-form-response": "formResponse",
+                  "iron-form-submit": "formSubmit",
+                  "iron-form-error": "formError"
+              },
+              formSubmit: function (event) {
+                //  this.querySelector(".output").innerHTML = JSON.stringify(event.detail);
+              },
+              formResponse: function (event, response) {
+                  console.log(event.detail);
+                  if (200 === response.xhr.status) {
+                      var data = response.xhr;
+                      console.log(response);
+                      if(!data.response.success){
+                          this.querySelector(".outputServer").innerHTML = "Error al crear invitacion, por favor intentelo mas tarde";
+                      }
+                  }
+              },
+              formError: function (event) {
+                  this.querySelector(".outputServer").innerHTML = event.detail.error;
+              }
+        });
+    </script>
+  </dom-module>
